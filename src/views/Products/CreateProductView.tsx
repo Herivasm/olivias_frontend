@@ -4,37 +4,40 @@ import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { createProduct } from "../../api/ProductAPI"
 import { toast } from "react-toastify"
+import CreateProductModal from "../../components/CreateProductModal"
 
-export default function CreateProductView() {
-    const navigate = useNavigate()
-    const initialValues: ProductFormData = {
-        productName: "",
-        price: 0,
-        description: "",
-        category: "" as ProductCategory,
-        imageUrl: ""
-    }
+interface CreateProductViewProps {
+    onClose: () => void;
+}
 
-    const { register, handleSubmit, formState } = useForm({ defaultValues: initialValues })
+export default function CreateProductView({ onClose }: CreateProductViewProps) {
+    // const navigate = useNavigate()
+    // const initialValues: ProductFormData = {
+    //     productName: "",
+    //     price: 0,
+    //     description: "",
+    //     category: "" as ProductCategory,
+    //     imageUrl: ""
+    // }
 
-    const { mutate } = useMutation({
-        mutationFn: createProduct,
-        onError: (error) => {
-            toast.error(error.message)
-        },
-        onSuccess: (data) => {
-            toast.success(data)
-            navigate('/')
-        }
-    })
+    // const { register, handleSubmit, formState } = useForm({ defaultValues: initialValues })
 
-    const handleForm = (formData: ProductFormData) => mutate(formData)
+    // const { mutate } = useMutation({
+    //     mutationFn: createProduct,
+    //     onError: (error) => {
+    //         toast.error(error.message)
+    //     },
+    //     onSuccess: (data) => {
+    //         toast.success(data)
+    //         navigate('/')
+    //     }
+    // })
+
+    // const handleForm = (formData: ProductFormData) => mutate(formData)
 
     return (
         <>
-            <div>
-
-            </div>
+            <CreateProductModal onClose={onClose} />
         </>
     )
 }

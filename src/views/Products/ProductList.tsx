@@ -1,41 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "../api/ProductAPI";
-import { Link } from "react-router-dom";
-import CreateProductView from "./Products/CreateProductView";
-
-import { Pencil, Trash2, Filter, Plus} from 'lucide-react';
-import { useState } from "react";
+import { Pencil, Trash2, Filter, Plus } from 'lucide-react';
+import Sidebar from '../../layouts/sidebar';
 
 
-export default function DashboardView() {
-   {/* const { data, isLoading } = useQuery({
-        queryKey: ["products"],
-        queryFn: getProducts,
-    });
 
-    if (isLoading) return <p className="text-center text-lg">Cargando...</p>; */}
-
-    {/* FUNCIONES PARA QUE FUNCIONE EL MODAL */ }
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    
-    const openModal = () => setIsModalOpen(true);
-    
-    
-    const closeModal = () => setIsModalOpen(false);
-
+export default function ProductList() {
     return (
-       <div className="flex min-h-screen">
+        <div className="flex min-h-screen">
             {/* ESTE ES EL SIDEBAR */}
-            
+            <Sidebar />
             
 
             {/* ESTA ES LA PARTE DONDE SE ENCUENTRA LA ESTRUCTURA DE LA TABLA*/}
             <div className="flex-1 p-6 bg-[#f4f5f5]">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-xl font-bold text-[#505341]">Lista de productos</h1>
-                    <button className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90"
-                    onClick={openModal}
-                    >
+                    <button className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90">
                         Registrar producto <Plus size={16} />
                     </button>
                 </div>
@@ -48,7 +27,7 @@ export default function DashboardView() {
                             placeholder="🔍 Buscar producto..."
                             className="flex-1 p-2 rounded-md w-full md:w-3/4 bg-white"
                         />
-                        <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90">
+                        <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2">
                             Filtrar <Filter size={16} />
                         </button>
                     </div>
@@ -81,20 +60,15 @@ export default function DashboardView() {
                                         <td className="p-3">preciooo</td>
                                         <td className="p-3">esta es una fecha</td>
                                         <td className="p-3">
-                                            <Link
-                                                to={'../Products/ProductDetailsView'}
-                                            >
-
-                                            <button className="bg-[#505341] text-white px-3 py-1 rounded-md hover:opacity-90">Ver detalle</button>
-                                            </Link>
+                                            <button className="bg-[#505341] text-white px-3 py-1 rounded-md">Ver detalle</button>
                                         </td>
                                         <td className="p-3">
-                                            <button className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500">
+                                            <button className="bg-yellow-400 text-black p-2 rounded-md">
                                                 <Pencil size={16} />
                                             </button>
                                         </td>
                                         <td className="p-3">
-                                            <button className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700">
+                                            <button className="bg-red-600 text-white p-2 rounded-md">
                                                 <Trash2 size={16} />
                                             </button>
                                         </td>
@@ -104,7 +78,6 @@ export default function DashboardView() {
                     </div>
                 </div>
             </div>
-            {isModalOpen && <CreateProductView onClose={closeModal} />}
         </div>
     );
 }
