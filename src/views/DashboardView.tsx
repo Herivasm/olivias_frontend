@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../api/ProductAPI";
 import { Link } from "react-router-dom";
 import CreateProductView from "./Products/CreateProductView";
+import EditProductView from "./Products/EditProductView";
 
 import { Pencil, Trash2, Filter, Plus} from 'lucide-react';
 import { useState } from "react";
@@ -16,12 +17,14 @@ export default function DashboardView() {
     if (isLoading) return <p className="text-center text-lg">Cargando...</p>; */}
 
     {/* FUNCIONES PARA QUE FUNCIONE EL MODAL */ }
-    const [isModalOpen, setIsModalOpen] = useState(false);
+     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     
     const openModal = () => setIsModalOpen(true);
-    
-    
     const closeModal = () => setIsModalOpen(false);
+
+    const openEditModal = () => setIsEditModalOpen(true);
+    const closeEditModal = () => setIsEditModalOpen(false);
 
     return (
        <div className="flex min-h-screen">
@@ -89,7 +92,9 @@ export default function DashboardView() {
                                             </Link>
                                         </td>
                                         <td className="p-3">
-                                            <button className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500">
+                                            <button className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500"
+                                            
+                                                onClick={openEditModal}>
                                                 <Pencil size={16} />
                                             </button>
                                         </td>
@@ -105,6 +110,7 @@ export default function DashboardView() {
                 </div>
             </div>
             {isModalOpen && <CreateProductView onClose={closeModal} />}
+            {isEditModalOpen && <EditProductView onClose={closeEditModal} />}
         </div>
     );
 }

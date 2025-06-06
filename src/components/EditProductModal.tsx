@@ -1,9 +1,9 @@
 import { X, Upload, ChevronDown } from 'lucide-react';
 
-interface CreateProductModalProps {
+interface EditProductModalProps {
 onClose: () => void;
 }
-export default function CreateProductModal({ onClose }: CreateProductModalProps) {
+export default function EditProductModal({ onClose }: EditProductModalProps) {
 
 
     return (
@@ -11,7 +11,7 @@ export default function CreateProductModal({ onClose }: CreateProductModalProps)
             <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 {/* ESTE ES EL HEADER */}
                 <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
-                    <h2 className="text-lg font-semibold">REGISTRAR PRODUCTO</h2>
+                    <h2 className="text-lg font-semibold">Editar Producto</h2>
                     <button className="text-white hover:text-gray-300 transition-colors"
                     onClick={onClose}
                     >
