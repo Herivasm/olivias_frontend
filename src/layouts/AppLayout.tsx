@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, NavLink } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Logo from "../components/Logo";
 import { Home, Tag, Utensils, Truck, Package, Receipt, LogOut, User } from 'lucide-react';
@@ -16,12 +16,12 @@ export default function AppLayout() {
                     </div>
 
                     <nav className="flex flex-col gap-2 px-4">
-                        <NavItem icon={<Home size={18} />} label="Inicio" />
-                        <NavItem icon={<Tag size={18} />} label="Productos" active />
-                        <NavItem icon={<Utensils size={18} />} label="Órdenes" />
-                        <NavItem icon={<Truck size={18} />} label="Proveedores" />
-                        <NavItem icon={<Package size={18} />} label="Insumos" />
-                        <NavItem icon={<Receipt size={18} />} label="Corte de caja" />
+                        <NavItem icon={<Home size={18} />} label="Inicio" to="/home" />
+                        <NavItem icon={<Tag size={18} />} label="Productos" to="/"/>
+                        <NavItem icon={<Utensils size={18} />} label="Órdenes" to="/orders"/>
+                        <NavItem icon={<Truck size={18} />} label="Proveedores" to="/suppliers" />
+                        <NavItem icon={<Package size={18} />} label="Insumos" to="/supplies"/>
+                        <NavItem icon={<Receipt size={18} />} label="Corte de caja" to="/caja"/>
                     </nav>
                 </div>
 
@@ -66,14 +66,17 @@ export default function AppLayout() {
         </>
     )
 }
-function NavItem({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean }) {
+function NavItem({ icon, label, to }: { icon: React.ReactNode; label: string; to: string }) {
     return (
-        <button
-            className={`flex items-center gap-3 px-3 py-2 rounded-md transition ${active ? 'bg-[#929471] text-[#222]' : 'hover:bg-[#6A6D55]'
-                }`}
+        <NavLink
+            to={to}
+            className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2 rounded-md transition 
+                ${isActive ? 'bg-[#929471] text-[#222]' : 'hover:bg-[#6A6D55] text-white'}`
+            }
         >
             {icon}
             <span>{label}</span>
-        </button>
+        </NavLink>
     );
 }
