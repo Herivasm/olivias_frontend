@@ -11,6 +11,7 @@ import SupplierDetailsView from "./views/Suppliers/SuppliersDetailsView";
 import SuppliesList from "./views/Supplies/SuppliesListView";
 import EditSuppliers from "./views/Suppliers/EditSuppliers";
 import SuppliesDetailsView from "./views/Supplies/SuppliesDetailsView";
+import CajaView from "./views/caja/CajaListView";
 
 export default function Router() {
     return (
@@ -28,6 +29,9 @@ export default function Router() {
 
                     <Route path="/supplies" element={<SuppliesList/>} />
                     <Route path="/supplies/:suppliersId" element={<SuppliesDetailsView/>} />
+
+                    <Route path="/caja" element={<CajaView/>} />
+
 
                     
                     
