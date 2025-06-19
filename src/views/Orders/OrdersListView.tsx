@@ -64,12 +64,12 @@ export default function OrdersListView() {
                         <table className="w-full text-sm bg-[#f3f1dd] rounded-md overflow-hidden">
                             <thead className="text-left font-semibold">
                                 <tr>
-                                    <th className="p-3"></th>
-                                    <th className="p-3">Imagen</th>
-                                    <th className="p-3">Nombre</th>
-                                    <th className="p-3">Categoría</th>
-                                    <th className="p-3">Precio ($MXN)</th>
-                                    <th className="p-3">Fecha creación</th>
+                                    <th className="p-3">Número de órden</th>
+                                    <th className="p-3">Tipo de pago</th>
+                                    <th className="p-3">Categoria</th>
+                                    
+                                    <th className="p-3">Total a pagar($MXN)</th>
+                                    
                                     <th className="p-3">Detalle</th>
                                     <th className="p-3">Editar</th>
                                     <th className="p-3">Eliminar</th>
@@ -78,10 +78,7 @@ export default function OrdersListView() {
                             <tbody className="bg-white text-[#333]">
 
                                 <tr className="border-t">
-                                    <td className="p-3 rounded-lg"><input type="checkbox" className="appearance-none w-5 h-5 border border-gray-400 rounded-md checked:bg-[#505341] checked:border-transparent focus:outline-none" /></td>
-                                    <td className="p-3">
-                                        <img src="" className="w-10 h-10 rounded-md object-cover" />
-                                    </td>
+                                    
                                     <td className="p-3">nombree</td>
                                     <td className="p-3">una categoria</td>
                                     <td className="p-3">preciooo</td>

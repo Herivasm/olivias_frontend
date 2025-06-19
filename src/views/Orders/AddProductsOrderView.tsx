@@ -1,4 +1,5 @@
 import { CheckSquare, Filter } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function AddProductsOrderView() {
     return (
@@ -8,7 +9,9 @@ export default function AddProductsOrderView() {
                 <h2 className="font-semibold text-base">Agregar productos a la orden</h2>
                 <div className="space-x-2">
                     <button className="bg-[#5A5F4E] text-white border border-white px-4 py-1 rounded hover:bg-white hover:text-[#5A5F4E] transition">LISTO</button>
+                    <Link to={'/orders/category'}>
                     <button className="bg-white text-[#5A5F4E] border border-[#5A5F4E] px-4 py-1 rounded hover:bg-[#5A5F4E] hover:text-white transition">CANCELAR</button>
+                    </Link>
                 </div>
             </div>
 

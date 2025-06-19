@@ -13,22 +13,22 @@ export default function CreateOrderModal({ onClose }: CreateOrderModalProps) {
             <div className="bg-[#D9D9D9] w-[95%] max-w-2xl rounded-md shadow-lg overflow-hidden">
                 {/* ESTE ES EL HEADER */}
                 <div className="bg-[#575B4F] text-white px-6 py-4 text-lg font-semibold">
-                    REGISTRAR ORDEN
+                    Registrar órden
                 </div>
 
                 <div className="p-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                         <h2 className="font-bold text-lg">
-                            ORDEN NUMERO:<span className="font-normal">100</span>
+                            Órden número:<span className="font-normal">100</span>
                         </h2>
                         <div className="flex gap-2 mt-2 sm:mt-0">
                             <select className="px-3 py-2 rounded-md bg-white border border-gray-300 shadow-sm text-sm">
                                 <option>Tipo de pago</option>
                                 <option>Efectivo</option>
-                                <option>Tarjeta</option>
+                                <option>Trasferencia</option>
                             </select>
                             <Link to="/orders/category">
-                            <button className="bg-[#8A8D81] text-white px-4 py-2 rounded-md text-sm hover:bg-[#777a6f] transition"
+                            <button className="bg-[#8A8D81] text-white px-4 py-2 w-45 rounded-md text-sm hover:bg-[#777a6f] transition"
                             
                             >
                                 Agregar productos

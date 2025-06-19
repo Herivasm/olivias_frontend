@@ -1,7 +1,7 @@
 import { X, Upload, ChevronDown } from 'lucide-react';
 
 interface EditProductModalProps {
-onClose: () => void;
+    onClose: () => void;
 }
 export default function EditProductModal({ onClose }: EditProductModalProps) {
 
@@ -13,7 +13,7 @@ export default function EditProductModal({ onClose }: EditProductModalProps) {
                 <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
                     <h2 className="text-lg font-semibold">Editar Producto</h2>
                     <button className="text-white hover:text-gray-300 transition-colors"
-                    onClick={onClose}
+                        onClick={onClose}
                     >
                         <X size={20} />
                     </button>
@@ -103,7 +103,7 @@ export default function EditProductModal({ onClose }: EditProductModalProps) {
                     {/* BOTONES */}
                     <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                         <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                        onClick={onClose}
+                            onClick={onClose}
                         >
                             Cancelar
                         </button>

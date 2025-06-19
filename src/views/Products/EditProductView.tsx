@@ -1,4 +1,4 @@
-import EditProductModal from "../../components/EditProductModal"
+import EditProductModal from "../../components/Products/EditProductModal"
 
 interface EditProductViewProps {
     onClose: () => void;
