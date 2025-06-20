@@ -40,17 +40,17 @@ export default function AppLayout() {
             {/* Área principal con header y contenido */}
             <div className="flex-1 flex flex-col">
                 {/* Header */}
-                <header className="bg-[#575B4F] text-white px-6 py-4 flex justify-between items-center shadow-sm">
+                <header className="bg-[#575B4F] text-white px-6 py-4 flex justify-between items-center shadow-sm h-16">
                     <div className="flex items-center">
 
                     </div>
                     
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-[#8B9475] rounded-full flex items-center justify-center">
+                            {/* <div className="w-8 h-8 bg-[#8B9475] rounded-full flex items-center justify-center">
                                 <User size={16} />
                             </div>
-                            <span className="text-sm">Fulanito de tal</span>
+                            <span className="text-sm">Fulanito de tal</span> */}
                         </div>
                     </div>
                 </header>
