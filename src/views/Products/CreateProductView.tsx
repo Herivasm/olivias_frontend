@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { createProduct } from "../../api/ProductAPI"
 import { toast } from "react-toastify"
-import CreateProductModal from "../../components/CreateProductModal"
+import CreateProductModal from "../../components/Products/CreateProductModal"
 
 interface CreateProductViewProps {
     onClose: () => void;

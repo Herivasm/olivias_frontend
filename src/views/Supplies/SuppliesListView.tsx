@@ -1,15 +1,19 @@
-import { Pencil, Trash2, Filter, Plus } from 'lucide-react';
+import { Pencil, Trash2, Filter, Plus, Search } from 'lucide-react';
 import Sidebar from '../../layouts/sidebar';
 import { useState } from 'react';
-import CreateSuppliesView from './CreateSupplies';
+import CreateSuppliesView from './CreateSuppliesView';
 import { Link } from 'react-router-dom';
+import EditSuppliesView from './EditSuppliesView';
 
 export default function SuppliesList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-        
+        const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         
         const openModal = () => setIsModalOpen(true);
         const closeModal = () => setIsModalOpen(false);
+    
+        const openEditModal = () => setIsEditModalOpen(true);
+        const closeEditModal = () => setIsEditModalOpen(false);
     
 
   return (
@@ -28,23 +32,29 @@ export default function SuppliesList() {
 
         <div className="bg-[#575B4F] p-4 rounded-lg">
           {/* Filtro y búsqueda */}
-          <div className="flex flex-wrap justify-between gap-2 mb-4">
-            <input
-              type="text"
-              placeholder="🔍 Buscar insumo..."
-              className="flex-1 p-2 rounded-md w-full md:w-3/4 bg-white"
-            />
-            <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2">
-              Filtrar <Filter size={16} />
-            </button>
-          </div>
+          <div className="flex flex-wrap gap-2 items-center mb-4">
+                    <div className="relative flex-1 w-full md:w-3/4">
+                        <Search
+                        size={18}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        />
+                        <input
+                        type="text"
+                        placeholder="Buscar producto..."
+                        className="w-full pl-10 pr-4 py-2 rounded-md bg-white"
+                        />
+                    </div>
+                    <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 w-full md:w-auto">
+                        Filtrar <Filter size={16} />
+                    </button>
+                    </div>
 
           {/* Tabla */}
           <div className="overflow-x-auto">
             <table className="w-full text-sm bg-[#f3f1dd] rounded-md overflow-hidden">
               <thead className="text-left font-semibold">
                 <tr>
-                  <th className="p-3"></th>
+                
                   <th className="p-3">Proveedor</th>
                   <th className="p-3">Nombre del insumo</th>
                   <th className="p-3">Gramaje</th> {/* Agregado */}
@@ -57,12 +67,7 @@ export default function SuppliesList() {
               </thead>
               <tbody className="bg-white text-[#333]">
                 <tr className="border-t">
-                  <td className="p-3 rounded-lg">
-                    <input
-                      type="checkbox"
-                      className="appearance-none w-5 h-5 border border-gray-400 rounded-md checked:bg-[#505341] checked:border-transparent focus:outline-none"
-                    />
-                  </td>
+                  
                   <td className="p-3">Proveedor ABC</td>
                   <td className="p-3">Azúcar refinada</td>
                   <td className="p-3">1</td> 
@@ -75,7 +80,8 @@ export default function SuppliesList() {
                    
                   </td>
                   <td className="p-3">
-                    <button className="bg-yellow-400 text-black p-2 rounded-md">
+                    <button className="bg-yellow-400 text-black p-2 rounded-md"
+                    onClick={openEditModal}>
                       <Pencil size={16} />
                     </button>
                   </td>
@@ -91,7 +97,7 @@ export default function SuppliesList() {
         </div>
       </div>
        {isModalOpen && <CreateSuppliesView onClose={closeModal} />}
-                              
+                           {isEditModalOpen && <EditSuppliesView onClose={closeEditModal} />}   
     </div>
   );
 }

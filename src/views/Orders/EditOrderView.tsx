@@ -1,14 +1,15 @@
 import EditProductModal from "../../components/Products/EditProductModal"
+import EditOrderModal from "../../components/Orders/EditOrderModal";
 
-interface EditProductViewProps {
+interface EditOrderViewProps {
     onClose: () => void;
 }
 
-export default function EditProductView({ onClose }: EditProductViewProps) {
+export default function EditOrderView({ onClose }: EditOrderViewProps) {
     return (
         <div>
             {/* Edit product modal content */}
-            <EditProductModal onClose={onClose} />
+            <EditOrderModal onClose={onClose} />
             {/* You can add more content here if needed */}
             <button onClick={onClose}></button>
         </div>

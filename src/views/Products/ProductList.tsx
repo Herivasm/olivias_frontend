@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Filter, Plus } from 'lucide-react';
+import { Pencil, Trash2, Filter, Plus, Search } from 'lucide-react';
 import Sidebar from '../../layouts/sidebar';
 
 
@@ -22,6 +22,7 @@ export default function ProductList() {
                 <div className="bg-[#575B4F] p-4 rounded-lg">
                     {/* ESTO ES DEL FILTRO Y LO DE LA BUSQUEDA */}
                     <div className="flex flex-wrap justify-between gap-2 mb-4 ">
+                        
                         <input
                             type="text"
                             placeholder="🔍 Buscar producto..."

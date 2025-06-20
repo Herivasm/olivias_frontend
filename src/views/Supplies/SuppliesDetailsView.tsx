@@ -7,7 +7,7 @@ export default function SupplyDetailsView() {
       {/* Header */}
       <div className="bg-[#575B4F] text-white px-6 py-4 flex items-center justify-between rounded-t-xl">
         <h2 className="text-xl font-semibold tracking-wide">Detalle del insumo</h2>
-        <Link to={'../'}>
+        <Link to={'../supplies'}>
           <button
             className="text-white hover:text-gray-300 transition-colors p-1"
             title="Volver"

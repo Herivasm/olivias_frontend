@@ -1,10 +1,10 @@
 import { X } from 'lucide-react';
 
-interface CreateProviderModalProps {
+interface CreateSuppliersModalProps {
   onClose: () => void;
 }
 
-export default function CreateProviderModal({ onClose }: CreateProviderModalProps) {
+export default function CreateSuppliersModal({ onClose }: CreateSuppliersModalProps) {
     
   return (
     <div className="fixed inset-0 bg-gray bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-[2px]">

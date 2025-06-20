@@ -1,18 +1,21 @@
 import { X } from 'lucide-react';
 
-interface CreateProviderModalProps {
+
+interface EditSuppliersModalProps {
   onClose: () => void;
+  
 }
 
-export default function CreateProviderModal({ onClose }: CreateProviderModalProps) {
-    
+export default function EditSuppliersModal({ onClose}: EditSuppliersModalProps) {
+
+
   return (
     <div className="fixed inset-0 bg-gray bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-[2px]">
       <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        
+
         {/* HEADER */}
         <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
-          <h2 className="text-lg font-semibold">REGISTRAR PROVEEDOR</h2>
+          <h2 className="text-lg font-semibold">EDITAR PROVEEDOR</h2>
           <button className="text-white hover:text-gray-300 transition-colors" onClick={onClose}>
             <X size={20} />
           </button>
@@ -38,7 +41,6 @@ export default function CreateProviderModal({ onClose }: CreateProviderModalProp
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F]"
               />
             </div>
-
           </div>
 
           {/* BOTONES */}
@@ -49,8 +51,10 @@ export default function CreateProviderModal({ onClose }: CreateProviderModalProp
             >
               Cancelar
             </button>
-            <button className="px-4 py-2 bg-[#575B4F] text-white rounded-md hover:opacity-90 transition-colors">
-              Guardar
+            <button
+              className="px-4 py-2 bg-[#575B4F] text-white rounded-md hover:opacity-90 transition-colors"
+            >
+              Guardar cambios
             </button>
           </div>
         </div>

@@ -4,13 +4,13 @@ import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { createProduct } from "../../api/ProductAPI"
 import { toast } from "react-toastify"
-import CreateProviderModal from "../../components/CreateSupplersModal"
+import CreateSuppliesModal from "../../components/Supplies/CreateSuppliesModal"
 
-interface CreateProviderViewProps {
+interface CreateSuppliesViewProps {
     onClose: () => void;
 }
 
-export default function CreateProviderView({ onClose }: CreateProviderViewProps) {
+export default function CreateSuppliesView({ onClose }: CreateSuppliesViewProps ) {
     // const navigate = useNavigate()
     // const initialValues: ProductFormData = {
     //     productName: "",
@@ -37,7 +37,7 @@ export default function CreateProviderView({ onClose }: CreateProviderViewProps)
 
     return (
         <>
-            <CreateProviderModal onClose={onClose} />
+            <CreateSuppliesModal onClose={onClose} />
         </>
     )
 }
