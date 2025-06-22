@@ -3,71 +3,61 @@ import { Link } from "react-router-dom";
 
 export default function OrderDeailsView() {
     return (
-        <div className="bg-[#D9D9D9] rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto mt-10">
-            {/* HEADER*/}
-            <div className="bg-[#575B4F] text-white px-6 py-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold uppercase">Detalle de la orden</h2>
+        <div className="bg-white rounded-xl overflow-hidden shadow-2xl max-w-6xl mx-auto mt-10 border border-gray-300">
+            {/* HEADER */}
+            <div className="bg-[#575B4F] text-white px-8 py-5 flex items-center justify-between">
+                <h2 className="text-xl font-semibold uppercase tracking-wide">Detalle de la orden</h2>
                 <Link to={'../orders'}>
                     <button
                         className="text-white hover:text-gray-300 transition-colors p-1"
                         title="Volver"
                     >
-                        <ArrowLeft size={20} />
+                        <ArrowLeft size={22} />
                     </button>
                 </Link>
             </div>
 
-            
-            <div className="p-6">
-                <p className="text-sm font-semibold text-gray-800 uppercase mb-4">
-                    Número de orden: <span className="normal-case font-normal ml-1">orden 1</span>
+            <div className="p-8 space-y-6">
+                {/* INFO ORDEN */}
+                <p className="text-base font-semibold text-gray-800 uppercase">
+                    Número de orden:
+                    <span className="font-normal normal-case ml-2 text-gray-700">orden 1</span>
                 </p>
 
-                {/* ESTA ES LA TABLA*/}
-                <div className="overflow-x-auto border rounded-lg bg-white shadow">
-                    <table className="w-full text-sm text-left text-gray-700">
-                        <thead className="bg-[#f5f3e7] text-gray-800 uppercase">
+                {/* TABLA */}
+                <div className="overflow-x-auto border-[2px] border-black rounded-lg bg-white shadow">
+                    <table className="w-full text-sm text-left text-gray-800">
+                        
+                        <thead className="bg-[#f3f2ea] text-gray-800 uppercase text-xs">
                             <tr>
-                                <th className="px-4 py-2">Producto</th>
-                                <th className="px-4 py-2">Tipo de pago</th>
-                                <th className="px-4 py-2">Cantidad</th>
-                                <th className="px-4 py-2">Categoría</th>
-                                <th className="px-4 py-2">Costo (MX)</th>
-                                <th className="px-4 py-2">Fecha creación</th>
+                                <th className="px-6 py-3">Producto</th>
+                                <th className="px-6 py-3">Tipo de pago</th>
+                                <th className="px-6 py-3">Cantidad</th>
+                                <th className="px-6 py-3">Categoría</th>
+                                <th className="px-6 py-3">Costo (MX)</th>
+                                <th className="px-6 py-3">Fecha creación</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {/* AQUI VAN LOS DATOS DE LA TABLA */}
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {/* DATOS */}
                             <tr>
-                                <td className="text-center py-6">
-                                    Producto
-                                </td>
-                                <td className="text-center py-6">
-                                    Efectivo
-                                </td>
-                                <td className="text-center py-6">
-                                    24
-                                </td>
-                                <td className="text-center py-6">
-                                    bebidas calientes
-                                </td>
-                                <td className="text-center py-6">
-                                    345
-                                </td>
-                                <td className="text-center py-6">
-                                    una fecha
-                                </td>
+                                <td className="px-6 py-4 text-center">Producto</td>
+                                <td className="px-6 py-4 text-center">Efectivo</td>
+                                <td className="px-6 py-4 text-center">24</td>
+                                <td className="px-6 py-4 text-center">Bebidas calientes</td>
+                                <td className="px-6 py-4 text-center">$345</td>
+                                <td className="px-6 py-4 text-center">Una fecha</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                {/* ESTE ES EL COSTO TOTAL */}
-                <div className="mt-6 text-right">
-                    <span className="text-sm font-semibold text-gray-800 uppercase">
+                {/* TOTAL */}
+                <div className="text-right pt-4">
+                    <span className="text-base font-semibold text-gray-800 uppercase">
                         Costo total de la orden (MX):{' '}
                     </span>
-                    <span className="text-sm font-bold text-gray-900">100</span>
+                    <span className="text-base font-bold text-green-700">$100</span>
                 </div>
             </div>
         </div>

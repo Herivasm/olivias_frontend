@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+
 /** Products */
 export const productCategorySchema = z.enum(["hotDrink", "coldDrink", "dish", "dessert"])
 export type ProductCategory = z.infer<typeof productCategorySchema>
@@ -26,4 +27,7 @@ export const dashboardProductSchema = z.array(
 
 export type Product = z.infer<typeof productSchema>
 export type ProductFormData = Pick<Product, 'productName' | 'price' | 'description' | 'category' | 'imageUrl'>
+
+
+/** SUPPLIES */
 

@@ -51,7 +51,7 @@ export default function Router() {
 
                     // SUPPLIES
                     <Route path="/supplies" element={<SuppliesList/>} />
-                    <Route path="/supplies/:suppliersId" element={<SuppliesDetailsView/>} />
+                    <Route path="/supplies/:id" element={<SuppliesDetailsView/>} />
 
                     //caja
                     <Route path="/caja" element={<CajaView/>} />
