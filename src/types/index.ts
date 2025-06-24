@@ -1,16 +1,26 @@
 import { z } from "zod";
 
-
 /** Products */
-export const productCategorySchema = z.enum(["hotDrink", "coldDrink", "dish", "dessert"])
+export const productCategorySchema = z.enum([
+  "hotDrinks",
+  "coldDrinks",
+  "alcohol",
+  "snacks",
+  "hamburguers",
+  "baguettes",
+  "sandwiches",
+  "desserts",
+])
+
 export type ProductCategory = z.infer<typeof productCategorySchema>
 
 export const productSchema = z.object({
     _id: z.string(),
     productName: z.string(),
     price: z.number(),
+    cost: z.number(), // ¡también falta esto!
     description: z.string(),
-    imageUrl: z.string(),
+    photoUrl: z.string().url().optional(),
     category: productCategorySchema,
 })
 
@@ -20,14 +30,13 @@ export const dashboardProductSchema = z.array(
         productName: true,
         price: true,
         description: true,
-        imageUrl: true,
+        photoUrl: true,
         category: true,
     })
 )
 
 export type Product = z.infer<typeof productSchema>
-export type ProductFormData = Pick<Product, 'productName' | 'price' | 'description' | 'category' | 'imageUrl'>
-
+export type ProductFormData = Pick<Product, 'productName' | 'price' | 'cost' | 'description' | 'category' | 'photoUrl'>
 
 /** SUPPLIES */
 
