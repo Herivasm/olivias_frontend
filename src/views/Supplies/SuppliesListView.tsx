@@ -90,7 +90,7 @@ export default function SuppliesList() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-[#505341]">Lista de insumos</h1>
           <button
-            className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90"
+            className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 cursor-pointer"
             onClick={openModal}
           >
             Registrar insumo <Plus size={16} />
@@ -160,14 +160,14 @@ export default function SuppliesList() {
                       </td>
                       <td className="p-3">
                         <Link to={`/supplies/${supply._id}`}>
-                          <button className="bg-[#505341] text-white px-3 py-1 rounded-md hover:bg-[#404030] transition-colors">
+                          <button className="bg-[#505341] text-white px-3 py-1 rounded-md hover:bg-[#404030] transition-colors cursor-pointer">
                             Ver detalle
                           </button>
                         </Link>
                       </td>
                       <td className="p-3">
                         <button
-                          className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors"
+                          className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors cursor-pointer"
                           onClick={() => openEditModal(supply)}
                           title="Editar insumo"
                         >
@@ -176,7 +176,7 @@ export default function SuppliesList() {
                       </td>
                       <td className="p-3">
                         <button 
-                          className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors"
+                          className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
                           onClick={() => openDeleteModal(supply)}
                           title="Eliminar insumo"
                         >

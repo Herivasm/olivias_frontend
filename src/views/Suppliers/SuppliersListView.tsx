@@ -97,7 +97,7 @@ export default function SuppliersListView() {
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-xl font-bold text-[#505341]">Lista de Proveedores</h1>
                     <button
-                        className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90"
+                        className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 cursor-pointer transition-colors"
                         onClick={openModal}
                     >
                         Registrar Proveedor <Plus size={16} />
@@ -151,14 +151,14 @@ export default function SuppliersListView() {
                                             <td className="p-3">{supplier.contact}</td>
                                             <td className="p-3">
                                                 <Link to={`/suppliers/${supplier._id}`}>
-                                                    <button className="bg-[#505341] text-white px-3 py-1 rounded-md hover:bg-[#404030] transition-colors">
+                                                    <button className="cursor-pointer bg-[#505341] text-white px-3 py-1 rounded-md hover:bg-[#404030] transition-colors">
                                                         Ver detalle
                                                     </button>
                                                 </Link>
                                             </td>
                                             <td className="p-3">
                                                 <button
-                                                    className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors"
+                                                    className="cursor-pointer bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors"
                                                     onClick={() => openEditModal(supplier)}
                                                     title="Editar proveedor"
                                                 >
@@ -167,7 +167,7 @@ export default function SuppliersListView() {
                                             </td>
                                             <td className="p-3">
                                                 <button
-                                                    className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors"
+                                                    className="cursor-pointer bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors"
                                                     onClick={() => handleDeleteSupplier(supplier._id)}
                                                     title="Eliminar proveedor"
                                                 >

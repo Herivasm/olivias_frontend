@@ -26,11 +26,11 @@ export default function AppLayout() {
                 </div>
 
                 <div className="bg-[#F1EFDD] text-[#505341] px-4 py-6 text-sm space-y-2">
-                    <button className="flex items-center gap-2 hover:underline">
+                    <button className="flex items-center gap-2 hover:underline cursor-pointer">
                         <LogOut size={16} />
                         Cerrar sesión
                     </button>
-                    <button className="flex items-center gap-2 hover:underline">
+                    <button className="flex items-center gap-2 hover:underline cursor-pointer">
                         <User size={16} />
                         Mi cuenta
                     </button>

@@ -111,7 +111,7 @@ export default function PaginationControls({
               key={index}
               onClick={() => typeof page === 'number' && onGoToPage(page)}
               disabled={typeof page !== 'number'}
-              className={`min-w-[40px] h-10 px-3 rounded-md text-sm font-medium transition-colors ${
+              className={`min-w-[40px] h-10 px-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
                 page === currentPage
                   ? 'bg-[#575B4F] text-white'
                   : typeof page === 'number'

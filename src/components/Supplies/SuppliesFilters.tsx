@@ -43,7 +43,7 @@ export default function SuppliesFilters({
           />
         </div>
         <button 
-          className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 w-full md:w-auto"
+          className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 w-full md:w-auto cursor-pointer"
           onClick={() => setShowFilters(!showFilters)}
         >
           Filtrar <Filter size={16} />
