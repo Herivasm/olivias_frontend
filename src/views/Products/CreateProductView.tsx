@@ -1,43 +1,39 @@
-import { useNavigate } from "react-router-dom"
-import type { ProductCategory, ProductFormData } from "../../types"
-import { useForm } from "react-hook-form"
-import { useMutation } from "@tanstack/react-query"
-import { createProduct } from "../../api/ProductAPI"
-import { toast } from "react-toastify"
-import CreateProductModal from "../../components/Products/CreateProductModal"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
-interface CreateProductViewProps {
-    onClose: () => void;
-}
+import CreateProductModal from "../../components/Products/CreateProductModal";
+import { createProduct } from "../../api/ProductAPI";
+import type { ProductFormData } from "../../types";
 
-export default function CreateProductView({ onClose }: CreateProductViewProps) {
-    // const navigate = useNavigate()
-    // const initialValues: ProductFormData = {
-    //     productName: "",
-    //     price: 0,
-    //     description: "",
-    //     category: "" as ProductCategory,
-    //     imageUrl: ""
-    // }
+export default function CreateProductView() {
+  const [showModal, setShowModal] = useState(true);
+  const navigate = useNavigate();
 
-    // const { register, handleSubmit, formState } = useForm({ defaultValues: initialValues })
+  const mutation = useMutation({
+    mutationFn: (formData: ProductFormData) => createProduct(formData),
+    onSuccess: (data) => {
+      toast.success("Producto creado correctamente");
+      setShowModal(false);
+      navigate("/products"); // o a la ruta que quieras
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Error al crear producto");
+    },
+  });
 
-    // const { mutate } = useMutation({
-    //     mutationFn: createProduct,
-    //     onError: (error) => {
-    //         toast.error(error.message)
-    //     },
-    //     onSuccess: (data) => {
-    //         toast.success(data)
-    //         navigate('/')
-    //     }
-    // })
-
-    // const handleForm = (formData: ProductFormData) => mutate(formData)
-
-    return (
-        <>
-            <CreateProductModal onClose={onClose} />
-        </>
-    )
+  return (
+    <>
+      {showModal && (
+        <CreateProductModal
+          onClose={() => {
+            setShowModal(false);
+            navigate("/products"); // salir al listado si cierra modal
+          }}
+          onSubmit={(data: ProductFormData) => mutation.mutate(data)}
+        />
+      )}
+    </>
+  );
 }
