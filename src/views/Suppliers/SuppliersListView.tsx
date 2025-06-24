@@ -1,15 +1,41 @@
 import { useEffect, useState } from 'react'
-import { Pencil, Trash2, Plus, Filter, Search } from 'lucide-react'
+import { Pencil, Trash2, Plus } from 'lucide-react'
 import CreateProviderView from './CreateSuppliersView'
 import EditSuppliersView from './EditSuppliersView'
+import SuppliersFilters from '../../components/Suppliers/SuppliersFilters'
+import PaginationControls from '../../components/PaginationControls'
 import { Link } from 'react-router-dom'
 import { getAllSuppliers, type Supplier } from '../../api/SuppliersAPI'
+import { getAllSupplies, type Supply } from '../../api/SuppliesAPI'
+import { useSuppliersFilters } from '../../components/Suppliers/useSuppliersFilters'
+import { usePagination } from '../../components/usePagination'
 
 export default function SuppliersListView() {
+    const [suppliers, setSuppliers] = useState<Supplier[]>([])
+    const [supplies, setSupplies] = useState<Supply[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [suppliers, setSuppliers] = useState<Supplier[]>([])
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
+
+  
+    const pagination = usePagination([], { itemsPerPage: 10 })
+
+  
+    const {
+        searchTerm,
+        setSearchTerm,
+        showFilters,
+        setShowFilters,
+        filters,
+        setFilters,
+        filteredSuppliers,
+        uniqueSupplies,
+        clearFilters,
+        hasActiveFilters
+    } = useSuppliersFilters(suppliers, supplies, pagination.resetPagination)
+
+   
+    const paginatedSuppliers = usePagination(filteredSuppliers, { itemsPerPage: 10 })
 
     const fetchSuppliers = async () => {
         try {
@@ -20,8 +46,18 @@ export default function SuppliersListView() {
         }
     }
 
+    const fetchSupplies = async () => {
+        try {
+            const data = await getAllSupplies()
+            setSupplies(data)
+        } catch (error) {
+            console.error('Error al obtener insumos:', error)
+        }
+    }
+
     useEffect(() => {
         fetchSuppliers()
+        fetchSupplies()
     }, [])
 
     const openModal = () => setIsModalOpen(true)
@@ -37,9 +73,25 @@ export default function SuppliersListView() {
         setSelectedSupplier(null)
     }
 
+    const handleEditSuccess = () => {
+        fetchSuppliers() 
+    }
+
+    const handleDeleteSupplier = async (supplierId: string) => {
+        // Aquí implementarías la lógica para eliminar el proveedor
+        console.log('Eliminar proveedor:', supplierId)
+        
+        // try {
+        //   await deleteSupplier(supplierId)
+        //   fetchSuppliers() // Refrescar la lista
+        // } catch (error) {
+        //   console.error('Error al eliminar proveedor:', error)
+        // }
+    }
+
     return (
         <div className="flex min-h-screen">
-            {/* SIDEBAR si lo tienes lo agregas aquí */}
+            
 
             <div className="flex-1 p-6 bg-[#f4f5f5]">
                 <div className="flex justify-between items-center mb-4">
@@ -53,22 +105,18 @@ export default function SuppliersListView() {
                 </div>
 
                 <div className="bg-[#575B4F] p-4 rounded-lg">
-                    <div className="flex flex-wrap gap-2 items-center mb-4">
-                        <div className="relative flex-1 w-full md:w-3/4">
-                            <Search
-                                size={18}
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Buscar proveedor..."
-                                className="w-full pl-10 pr-4 py-2 rounded-md bg-white"
-                            />
-                        </div>
-                        <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 w-full md:w-auto">
-                            Filtrar <Filter size={16} />
-                        </button>
-                    </div>
+                    {/* Componente de filtros */}
+                    <SuppliersFilters
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        showFilters={showFilters}
+                        setShowFilters={setShowFilters}
+                        filters={filters}
+                        setFilters={setFilters}
+                        uniqueSupplies={uniqueSupplies}
+                        hasActiveFilters={!!hasActiveFilters}
+                        onClearFilters={clearFilters}
+                    />
 
                     {/* TABLA DE PROVEEDORES */}
                     <div className="overflow-x-auto">
@@ -83,16 +131,23 @@ export default function SuppliersListView() {
                                 </tr>
                             </thead>
                             <tbody className="bg-white text-[#333]">
-                                {suppliers.length === 0 ? (
+                                {paginatedSuppliers.paginatedItems.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="p-8 text-center text-gray-500">
-                                            No hay proveedores registrados
+                                            {filteredSuppliers.length === 0 
+                                                ? (suppliers.length === 0 
+                                                    ? 'No hay proveedores registrados' 
+                                                    : 'No se encontraron proveedores que coincidan con los criterios de búsqueda')
+                                                : 'No hay elementos en esta página'
+                                            }
                                         </td>
                                     </tr>
                                 ) : (
-                                    suppliers.map((supplier) => (
+                                    paginatedSuppliers.paginatedItems.map((supplier) => (
                                         <tr key={supplier._id} className="border-t hover:bg-gray-50 transition-colors">
-                                            <td className="p-3">{supplier.supplierName}</td>
+                                            <td className="p-3">
+                                                <span className="font-medium">{supplier.supplierName}</span>
+                                            </td>
                                             <td className="p-3">{supplier.contact}</td>
                                             <td className="p-3">
                                                 <Link to={`/suppliers/${supplier._id}`}>
@@ -113,8 +168,8 @@ export default function SuppliersListView() {
                                             <td className="p-3">
                                                 <button
                                                     className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors"
+                                                    onClick={() => handleDeleteSupplier(supplier._id)}
                                                     title="Eliminar proveedor"
-                                                // onClick={() => delete logic aquí}
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
@@ -125,15 +180,31 @@ export default function SuppliersListView() {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Controles de paginación */}
+                    <PaginationControls
+                        currentPage={paginatedSuppliers.currentPage}
+                        totalPages={paginatedSuppliers.totalPages}
+                        totalItems={paginatedSuppliers.totalItems}
+                        startItem={paginatedSuppliers.startItem}
+                        endItem={paginatedSuppliers.endItem}
+                        canGoPrev={paginatedSuppliers.canGoPrev}
+                        canGoNext={paginatedSuppliers.canGoNext}
+                        onGoToPage={paginatedSuppliers.goToPage}
+                        onPrevPage={paginatedSuppliers.prevPage}
+                        onNextPage={paginatedSuppliers.nextPage}
+                        onGoToFirstPage={paginatedSuppliers.goToFirstPage}
+                        onGoToLastPage={paginatedSuppliers.goToLastPage}
+                    />
                 </div>
             </div>
 
             {isModalOpen && <CreateProviderView onClose={closeModal} />}
             {isEditModalOpen && selectedSupplier && (
                 <EditSuppliersView
-                    //   supplier={selectedSupplier}
+                    // supplier={selectedSupplier}
                     onClose={closeEditModal}
-                //   onSuccess={fetchSuppliers} // recargar datos al editar
+                    // onSuccess={handleEditSuccess}
                 />
             )}
         </div>

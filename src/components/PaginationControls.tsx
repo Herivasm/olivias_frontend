@@ -68,7 +68,7 @@ export default function PaginationControls({
   if (totalPages <= 1) return null
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 p-4 bg-white rounded-lg">
+    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 p-4 bg-white rounded-lg h-11">
       {/* Información de elementos */}
       <div className="text-sm text-gray-600">
         Mostrando {startItem} - {endItem} de {totalItems} elementos
