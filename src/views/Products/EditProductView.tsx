@@ -1,16 +1,53 @@
-import EditProductModal from "../../components/Products/EditProductModal"
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
-interface EditProductViewProps {
-    onClose: () => void;
-}
+import EditProductModal from "../../components/Products/EditProductModal";
+import { getProductById, updateProduct } from "../../api/ProductAPI";
+import type { Product, ProductFormData } from "../../types";
 
-export default function EditProductView({ onClose }: EditProductViewProps) {
-    return (
-        <div>
-            {/* Edit product modal content */}
-            <EditProductModal onClose={onClose} />
-            {/* You can add more content here if needed */}
-            <button onClick={onClose}></button>
-        </div>
-    )
+export default function EditProductView() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(true);
+
+  // Obtener producto actual
+  const { data: product, isLoading, isError } = useQuery<Product>({
+    queryKey: ["product", id],
+    queryFn: () => getProductById(id!),
+    enabled: !!id,
+  });
+
+  // Mutación para actualizar
+  const mutation = useMutation({
+    mutationFn: (formData: ProductFormData) =>
+      updateProduct({ productId: id!, formData }),
+    onSuccess: () => {
+      toast.success("Producto actualizado correctamente");
+      setShowModal(false);
+      navigate("/products");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Error al actualizar producto");
+    },
+  });
+
+  if (isLoading) return <p>Cargando producto...</p>;
+  if (isError || !product) return <p>Error al cargar el producto</p>;
+
+  return (
+    <>
+      {showModal && (
+        <EditProductModal
+          product={product}
+          onClose={() => {
+            setShowModal(false);
+            navigate("/products");
+          }}
+          onSubmit={(data: ProductFormData) => mutation.mutate(data)}
+        />
+      )}
+    </>
+  );
 }
