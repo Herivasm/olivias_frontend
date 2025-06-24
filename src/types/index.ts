@@ -29,6 +29,7 @@ export const dashboardProductSchema = z.array(
         _id: true,
         productName: true,
         price: true,
+        cost: true,
         description: true,
         photoUrl: true,
         category: true,
