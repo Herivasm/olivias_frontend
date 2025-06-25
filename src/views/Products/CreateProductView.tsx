@@ -16,7 +16,7 @@ export default function CreateProductView() {
     onSuccess: (data) => {
       toast.success("Producto creado correctamente");
       setShowModal(false);
-      navigate("/products"); // o a la ruta que quieras
+      navigate("/"); // o a la ruta que quieras
     },
     onError: (error: any) => {
       toast.error(error.message || "Error al crear producto");
@@ -29,7 +29,7 @@ export default function CreateProductView() {
         <CreateProductModal
           onClose={() => {
             setShowModal(false);
-            navigate("/products"); // salir al listado si cierra modal
+            navigate("/"); // salir al listado si cierra modal
           }}
           onSubmit={(data: ProductFormData) => mutation.mutate(data)}
         />

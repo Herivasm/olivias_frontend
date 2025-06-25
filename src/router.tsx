@@ -31,7 +31,7 @@ export default function Router() {
                 <Route element={<AppLayout/>}>
 
                     // PRODUCTOS
-                    <Route path="/products" element={<DashboardView />} index />
+                    <Route path="/" element={<DashboardView />} index />
                     <Route path="/products/create" element={<CreateProductView onClose={() => { }} />} />
                     <Route path="/products/:productId" element={<ProductDetailsView/>} />
                     <Route path="/products/:productId/edit" element={<EditProductView onClose={() => { }} />} />
