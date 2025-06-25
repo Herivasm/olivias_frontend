@@ -1,16 +1,18 @@
 import EditSuppliersModal from "../../components/Suppliers/EditSuppliersModal";
+import type { Supplier } from "../../api/SuppliersAPI";
 
 interface EditSuppliersProps {
     onClose: () => void;
+    supplier: Supplier;
+    onSuccess: () => void;
 }
 
-export default function EditSuppliersView({ onClose }:  EditSuppliersProps) {
+export default function EditSuppliersView({ onClose, supplier, onSuccess }: EditSuppliersProps) {
     return (
-        <div>
-            {/* Edit Supplers modal content */}
-            <EditSuppliersModal onClose={onClose} />
-            {/* You can add more content here if needed */}
-            <button onClick={onClose}></button>
-        </div>
-    )
+        <EditSuppliersModal 
+            onClose={onClose} 
+            supplier={supplier}
+            onSuccess={onSuccess}
+        />
+    );
 }

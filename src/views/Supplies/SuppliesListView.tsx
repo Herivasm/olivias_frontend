@@ -1,4 +1,4 @@
-// src/views/supplies/SuppliesListView.tsx
+
 import { useEffect, useState } from 'react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import CreateSuppliesView from './CreateSuppliesView'
@@ -18,10 +18,10 @@ export default function SuppliesList() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedSupply, setSelectedSupply] = useState<Supply | null>(null)
 
-  // Hook de paginación
+
   const pagination = usePagination([], { itemsPerPage: 10 })
 
-  // Usar el hook personalizado para filtros con callback para resetear paginación
+
   const {
     searchTerm,
     setSearchTerm,
@@ -35,7 +35,6 @@ export default function SuppliesList() {
     hasActiveFilters
   } = useSuppliesFilters(supplies, pagination.resetPagination)
 
-  // Aplicar paginación a los elementos filtrados
   const paginatedSupplies = usePagination(filteredSupplies, { itemsPerPage: 10 })
 
   const fetchSupplies = async () => {
@@ -75,11 +74,11 @@ export default function SuppliesList() {
   }
 
   const handleEditSuccess = () => {
-    fetchSupplies() // Refrescar la lista después de editar
+    fetchSupplies() 
   }
 
   const handleDeleteSuccess = () => {
-    fetchSupplies() // Refrescar la lista después de eliminar
+    fetchSupplies() 
   }
 
   return (

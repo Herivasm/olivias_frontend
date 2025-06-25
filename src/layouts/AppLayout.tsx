@@ -16,8 +16,8 @@ export default function AppLayout() {
                     </div>
 
                     <nav className="flex flex-col gap-2 px-4">
-                        <NavItem icon={<Home size={18} />} label="Inicio" to="/home" />
-                        <NavItem icon={<Tag size={18} />} label="Productos" to="/"/>
+                        
+                        <NavItem icon={<Tag size={18} />} label="Productos" to="/products"/>
                         <NavItem icon={<Utensils size={18} />} label="Órdenes" to="/orders"/>
                         <NavItem icon={<Truck size={18} />} label="Proveedores" to="/suppliers" />
                         <NavItem icon={<Package size={18} />} label="Insumos" to="/supplies"/>

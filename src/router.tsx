@@ -31,7 +31,7 @@ export default function Router() {
                 <Route element={<AppLayout/>}>
 
                     // PRODUCTOS
-                    <Route path="/" element={<DashboardView />} index />
+                    <Route path="/products" element={<DashboardView />} index />
                     <Route path="/products/create" element={<CreateProductView onClose={() => { }} />} />
                     <Route path="/products/:productId" element={<ProductDetailsView/>} />
                     <Route path="/products/:productId/edit" element={<EditProductView onClose={() => { }} />} />
@@ -46,8 +46,8 @@ export default function Router() {
 
                     // SUPPLIERS
                     <Route path="/suppliers" element={<SupplierstList />} />
-                    <Route path="/suppliers/:suppliersId" element={<SupplierDetailsView/>} />
-                    <Route path="/suppliers/:suppliersId/edit" element={<EditSuppliers onClose={() => { }} />} />
+                    <Route path="/suppliers/:id" element={<SupplierDetailsView/>} />
+                    <Route path="/suppliers/:id" element={<EditSuppliers onClose={() => { }} />} />
 
                     // SUPPLIES
                     <Route path="/supplies" element={<SuppliesList/>} />

@@ -3,12 +3,12 @@ import type { Supplier } from '../../api/SuppliersAPI'
 import type { Supply } from '../../api/SuppliesAPI'
 
 export interface SuppliersFilters {
-  supply: string // ID del insumo para filtrar proveedores
+  supply: string 
 }
 
 export const useSuppliersFilters = (
   suppliers: Supplier[], 
-  supplies: Supply[], // Lista de insumos para filtrar
+  supplies: Supply[], 
   onFiltersChange?: () => void
 ) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -17,11 +17,11 @@ export const useSuppliersFilters = (
     supply: ''
   })
 
-  // Función para aplicar filtros y búsqueda
+
   const filteredSuppliers = useMemo(() => {
     let filtered = [...suppliers]
 
-    // Aplicar búsqueda por término
+
     if (searchTerm.trim()) {
       filtered = filtered.filter(supplier =>
         supplier.supplierName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -29,13 +29,13 @@ export const useSuppliersFilters = (
       )
     }
 
-    // Aplicar filtro por insumo
+  
     if (filters.supply) {
-      // Encontrar el nombre del insumo seleccionado
+     
       const selectedSupplyName = supplies.find(supply => supply._id === filters.supply)?.supplyName
       
       if (selectedSupplyName) {
-        // Obtener todos los proveedores que suministran insumos con ese nombre
+       
         const supplierIdsWithSupply = supplies
           .filter(supply => supply.supplyName === selectedSupplyName && supply.supplier)
           .map(supply => supply.supplier?._id)
@@ -50,11 +50,10 @@ export const useSuppliersFilters = (
     return filtered
   }, [suppliers, supplies, searchTerm, filters])
 
-  // Obtener lista única de insumos para el filtro (solo nombres únicos)
+
   const uniqueSupplies = useMemo(() => {
     const suppliesWithSuppliers = supplies.filter(supply => supply.supplier)
-    
-    // Crear un Map para agrupar por nombre de insumo
+
     const suppliesMap = new Map<string, { _id: string; supplyName: string }>()
     
     suppliesWithSuppliers.forEach(supply => {
@@ -66,24 +65,21 @@ export const useSuppliersFilters = (
       }
     })
     
-    // Convertir el Map a array y ordenar alfabéticamente
+
     return Array.from(suppliesMap.values())
       .sort((a, b) => a.supplyName.localeCompare(b.supplyName))
   }, [supplies])
 
-  // Función para limpiar filtros
   const clearFilters = () => {
     setSearchTerm('')
     setFilters({
       supply: ''
     })
-    onFiltersChange?.() // Callback para resetear paginación
+    onFiltersChange?.() 
   }
 
-  // Verificar si hay filtros activos
   const hasActiveFilters = searchTerm || Object.values(filters).some(filter => filter)
 
-  // Notificar cuando cambien los filtros
   useEffect(() => {
     onFiltersChange?.()
   }, [searchTerm, filters, onFiltersChange])

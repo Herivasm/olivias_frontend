@@ -17,11 +17,10 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
     supplier: ''
   })
 
-  // Función para aplicar filtros y búsqueda
+
   const filteredSupplies = useMemo(() => {
     let filtered = [...supplies]
 
-    // Aplicar búsqueda por término
     if (searchTerm.trim()) {
       filtered = filtered.filter(supply =>
         supply.supplyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -29,12 +28,10 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
       )
     }
 
-    // Aplicar filtro por medida
     if (filters.measure) {
       filtered = filtered.filter(supply => supply.measure === filters.measure)
     }
 
-    // Aplicar filtro por rango de stock
     if (filters.stockRange) {
       switch (filters.stockRange) {
         case 'low':
@@ -49,7 +46,7 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
       }
     }
 
-    // Aplicar filtro por proveedor
+
     if (filters.supplier) {
       filtered = filtered.filter(supply => supply.supplier?._id === filters.supplier)
     }
@@ -57,7 +54,7 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
     return filtered
   }, [supplies, searchTerm, filters])
 
-  // Obtener lista única de proveedores para el filtro
+
   const uniqueSuppliers = useMemo(() => {
     return supplies.reduce((acc, supply) => {
       if (supply.supplier && !acc.find(s => s._id === supply.supplier._id)) {
@@ -67,7 +64,7 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
     }, [] as { _id: string; supplierName: string }[])
   }, [supplies])
 
-  // Función para limpiar filtros
+
   const clearFilters = () => {
     setSearchTerm('')
     setFilters({
@@ -75,13 +72,11 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
       stockRange: '',
       supplier: ''
     })
-    onFiltersChange?.() // Callback para resetear paginación
+    onFiltersChange?.()
   }
 
-  // Verificar si hay filtros activos
   const hasActiveFilters = searchTerm || filters.measure || filters.stockRange || filters.supplier
 
-  // Notificar cuando cambien los filtros
   useEffect(() => {
     onFiltersChange?.()
   }, [searchTerm, filters, onFiltersChange])

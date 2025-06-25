@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import CreateProviderView from './CreateSuppliersView'
 import EditSuppliersView from './EditSuppliersView'
+import DeleteSupplierConfirmationModal from '../../components/Suppliers/DeleteSuppliersConfirmationModal'
 import SuppliersFilters from '../../components/Suppliers/SuppliersFilters'
 import PaginationControls from '../../components/PaginationControls'
 import { Link } from 'react-router-dom'
@@ -15,12 +16,13 @@ export default function SuppliersListView() {
     const [supplies, setSupplies] = useState<Supply[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
 
-  
+
     const pagination = usePagination([], { itemsPerPage: 10 })
 
-  
+
     const {
         searchTerm,
         setSearchTerm,
@@ -34,7 +36,7 @@ export default function SuppliersListView() {
         hasActiveFilters
     } = useSuppliersFilters(suppliers, supplies, pagination.resetPagination)
 
-   
+
     const paginatedSuppliers = usePagination(filteredSuppliers, { itemsPerPage: 10 })
 
     const fetchSuppliers = async () => {
@@ -73,25 +75,27 @@ export default function SuppliersListView() {
         setSelectedSupplier(null)
     }
 
-    const handleEditSuccess = () => {
-        fetchSuppliers() 
+    const openDeleteModal = (supplier: Supplier) => {
+        setSelectedSupplier(supplier)
+        setIsDeleteModalOpen(true)
     }
 
-    const handleDeleteSupplier = async (supplierId: string) => {
-        // Aquí implementarías la lógica para eliminar el proveedor
-        console.log('Eliminar proveedor:', supplierId)
-        
-        // try {
-        //   await deleteSupplier(supplierId)
-        //   fetchSuppliers() // Refrescar la lista
-        // } catch (error) {
-        //   console.error('Error al eliminar proveedor:', error)
-        // }
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false)
+        setSelectedSupplier(null)
+    }
+
+    const handleEditSuccess = () => {
+        fetchSuppliers()
+    }
+
+    const handleDeleteSuccess = () => {
+        fetchSuppliers()
     }
 
     return (
         <div className="flex min-h-screen">
-            
+
 
             <div className="flex-1 p-6 bg-[#f4f5f5]">
                 <div className="flex justify-between items-center mb-4">
@@ -134,9 +138,9 @@ export default function SuppliersListView() {
                                 {paginatedSuppliers.paginatedItems.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="p-8 text-center text-gray-500">
-                                            {filteredSuppliers.length === 0 
-                                                ? (suppliers.length === 0 
-                                                    ? 'No hay proveedores registrados' 
+                                            {filteredSuppliers.length === 0
+                                                ? (suppliers.length === 0
+                                                    ? 'No hay proveedores registrados'
                                                     : 'No se encontraron proveedores que coincidan con los criterios de búsqueda')
                                                 : 'No hay elementos en esta página'
                                             }
@@ -168,7 +172,7 @@ export default function SuppliersListView() {
                                             <td className="p-3">
                                                 <button
                                                     className="cursor-pointer bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors"
-                                                    onClick={() => handleDeleteSupplier(supplier._id)}
+                                                    onClick={() => openDeleteModal(supplier)}
                                                     title="Eliminar proveedor"
                                                 >
                                                     <Trash2 size={16} />
@@ -199,12 +203,22 @@ export default function SuppliersListView() {
                 </div>
             </div>
 
+            {/* MODALES */}
             {isModalOpen && <CreateProviderView onClose={closeModal} />}
+
             {isEditModalOpen && selectedSupplier && (
                 <EditSuppliersView
-                    // supplier={selectedSupplier}
+                    supplier={selectedSupplier}
                     onClose={closeEditModal}
-                    // onSuccess={handleEditSuccess}
+                    onSuccess={handleEditSuccess}
+                />
+            )}
+
+            {isDeleteModalOpen && selectedSupplier && (
+                <DeleteSupplierConfirmationModal
+                    supplier={selectedSupplier}
+                    onClose={closeDeleteModal}
+                    onSuccess={handleDeleteSuccess}
                 />
             )}
         </div>
