@@ -7,11 +7,16 @@ import {
     type ProductFormData
 } from "../types";
 
+type ProductResponse = {
+    message: string;
+    product: Product;
+}
+
 export async function createProduct(formData: ProductFormData) {
     try {
-        const { data } = await api.post('/products', formData);
+        const { data } = await api.post<ProductResponse>('/products', formData);
 
-        const result = productSchema.safeParse(data);
+        const result = productSchema.safeParse(data.product);
         if (!result.success) {
             throw new Error("Respuesta inválida del servidor al crear producto");
         }
@@ -29,12 +34,11 @@ export async function createProduct(formData: ProductFormData) {
 export async function getProducts() {
     try {
         const { data } = await api.get('/products');
-
         const response = dashboardProductSchema.safeParse(data);
+
         if (!response.success) {
             throw new Error("Datos de productos no válidos");
         }
-
         return response.data;
 
     } catch (error) {
@@ -48,12 +52,10 @@ export async function getProducts() {
 export async function getProductById(id: Product['_id']) {
     try {
         const { data } = await api.get(`/products/${id}`);
-
         const result = productSchema.safeParse(data);
         if (!result.success) {
             throw new Error("Producto no válido recibido del servidor");
         }
-
         return result.data;
 
     } catch (error) {
@@ -71,9 +73,9 @@ type ProductAPIType = {
 
 export async function updateProduct({ formData, productId }: ProductAPIType) {
     try {
-        const { data } = await api.put(`/products/${productId}`, formData);
+        const { data } = await api.put<ProductResponse>(`/products/${productId}`, formData);
 
-        const result = productSchema.safeParse(data);
+        const result = productSchema.safeParse(data.product);
         if (!result.success) {
             throw new Error("Respuesta inválida del servidor al actualizar producto");
         }

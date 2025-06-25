@@ -1,10 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import DashboardView from "./views/DashboardView";
-import CreateProductView from "./views/Products/CreateProductView";
 import ProductDetailsView from "./views/Products/ProductDetailsView";
-import EditProductView from "./views/Products/EditProductView";
-import ProductList from "./views/Products/ProductList";
 import OrdersListView from "./views/Orders/OrdersListView";
 // import Sidebar from "./layouts/sidebar";
 
@@ -28,40 +25,38 @@ export default function Router() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route element={<AppLayout/>}>
+                <Route element={<AppLayout />}>
 
                     // PRODUCTOS
                     <Route path="/" element={<DashboardView />} index />
-                    <Route path="/products/create" element={<CreateProductView onClose={() => { }} />} />
-                    <Route path="/products/:productId" element={<ProductDetailsView/>} />
-                    <Route path="/products/:productId/edit" element={<EditProductView onClose={() => { }} />} />
+                    <Route path="/products/:productId" element={<ProductDetailsView />} />
 
                     // ORDENES
                     <Route path="/orders" element={<OrdersListView />} />
                     <Route path="/orders/category" element={<CategoryOrderView />} />
-                    <Route path="/orders/details" element={<OrderDeailsView/>} />
-                    <Route path="/orders/addProductOrder" element={<AddProductsOrderView/>} />
+                    <Route path="/orders/details" element={<OrderDeailsView />} />
+                    <Route path="/orders/addProductOrder" element={<AddProductsOrderView />} />
 
 
 
                     // SUPPLIERS
                     <Route path="/suppliers" element={<SupplierstList />} />
-                    <Route path="/suppliers/:id" element={<SupplierDetailsView/>} />
+                    <Route path="/suppliers/:id" element={<SupplierDetailsView />} />
                     <Route path="/suppliers/:id" element={<EditSuppliers onClose={() => { }} />} />
 
                     // SUPPLIES
-                    <Route path="/supplies" element={<SuppliesList/>} />
-                    <Route path="/supplies/:id" element={<SuppliesDetailsView/>} />
+                    <Route path="/supplies" element={<SuppliesList />} />
+                    <Route path="/supplies/:id" element={<SuppliesDetailsView />} />
 
                     //caja
-                    <Route path="/caja" element={<CajaView/>} />
-
-                    
-                    
+                    <Route path="/caja" element={<CajaView />} />
 
 
-                    
-                    
+
+
+
+
+
 
                 </Route>
             </Routes>
