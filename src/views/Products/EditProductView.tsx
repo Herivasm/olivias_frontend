@@ -8,25 +8,25 @@ import { getProductById, updateProduct } from "../../api/ProductAPI";
 import type { Product, ProductFormData } from "../../types";
 
 export default function EditProductView() {
-  const { id } = useParams<{ id: string }>();
+  const { productId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(true);
 
   // Obtener producto actual
   const { data: product, isLoading, isError } = useQuery<Product>({
-    queryKey: ["product", id],
-    queryFn: () => getProductById(id!),
+    queryKey: ["product", productId],
+    queryFn: () => getProductById(productId!),
     enabled: !!id,
   });
 
   // Mutación para actualizar
   const mutation = useMutation({
     mutationFn: (formData: ProductFormData) =>
-      updateProduct({ productId: id!, formData }),
+      updateProduct({ productId: productId!, formData }),
     onSuccess: () => {
       toast.success("Producto actualizado correctamente");
       setShowModal(false);
-      navigate("/products");
+      navigate("/");
     },
     onError: (error: any) => {
       toast.error(error.message || "Error al actualizar producto");
@@ -43,7 +43,7 @@ export default function EditProductView() {
           product={product}
           onClose={() => {
             setShowModal(false);
-            navigate("/products");
+            navigate("/");
           }}
           onSubmit={(data: ProductFormData) => mutation.mutate(data)}
         />
