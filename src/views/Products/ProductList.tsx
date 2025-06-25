@@ -1,66 +1,36 @@
-import { useState } from "react";
-import { Pencil, Trash2, Filter, Plus } from 'lucide-react';
-import Sidebar from '../../layouts/sidebar';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProducts, deleteProduct } from "../../api/ProductAPI";
+import { Product } from "../../types";
+import { Pencil, Trash2, Filter, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import Sidebar from "../../layouts/sidebar";
 import { toast } from "react-toastify";
-import EditProductModal from "../../components/Products/EditProductModal";
-import CreateProductModal from "../../components/Products/CreateProductModal";
-import type { Product } from "../../types";
 
 export default function ProductList() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Estado para modales
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { data: products, isLoading, isError } = useQuery({
+    queryKey: ["products"],
+    queryFn: getProducts,
+  });
 
-  // Traer productos con react-query
-  const { data: products, isLoading, isError } = useQuery<Product[]>(["products"], getProducts);
-
-  // Mutación para eliminar producto
-  const deleteMutation = useMutation(deleteProduct, {
+  const deleteMutation = useMutation({
+    mutationFn: deleteProduct,
     onSuccess: () => {
       toast.success("Producto eliminado");
       queryClient.invalidateQueries(["products"]);
     },
     onError: (error: any) => {
-      toast.error(error.message || "Error al eliminar producto");
-    }
+      toast.error(error.message || "Error al eliminar");
+    },
   });
 
-  // Abrir modal editar
-  function openEditModal(product: Product) {
-    setSelectedProduct(product);
-    setIsEditModalOpen(true);
-  }
-
-  // Cerrar modal editar
-  function closeEditModal() {
-    setSelectedProduct(null);
-    setIsEditModalOpen(false);
-  }
-
-  // Abrir modal crear
-  function openCreateModal() {
-    setIsCreateModalOpen(true);
-  }
-
-  // Cerrar modal crear
-  function closeCreateModal() {
-    setIsCreateModalOpen(false);
-  }
-
-  // Confirmar y eliminar producto
-  function handleDelete(product: Product) {
-    if (window.confirm(`¿Eliminar el producto "${product.productName}"? Esta acción no se puede deshacer.`)) {
-      deleteMutation.mutate(product._id);
+  const handleDelete = (id: string) => {
+    if (confirm("¿Seguro que quieres eliminar este producto?")) {
+      deleteMutation.mutate(id);
     }
-  }
-
-  if (isLoading) return <p className="p-6">Cargando productos...</p>;
-  if (isError) return <p className="p-6 text-red-500">Error al cargar productos.</p>;
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -69,27 +39,28 @@ export default function ProductList() {
       <div className="flex-1 p-6 bg-[#f4f5f5]">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-[#505341]">Lista de productos</h1>
-          <button
-            onClick={openCreateModal}
-            className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90"
-          >
-            Registrar producto <Plus size={16} />
-          </button>
+          <Link to="/products/create">
+            <button className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90">
+              Registrar producto <Plus size={16} />
+            </button>
+          </Link>
         </div>
 
         <div className="bg-[#575B4F] p-4 rounded-lg">
-          <div className="flex flex-wrap justify-between gap-2 mb-4 ">
+          {/* Filtro y búsqueda */}
+          <div className="flex flex-wrap justify-between gap-2 mb-4">
             <input
               type="text"
               placeholder="🔍 Buscar producto..."
               className="flex-1 p-2 rounded-md w-full md:w-3/4 bg-white"
-              // Puedes agregar búsqueda aquí luego
+              disabled
             />
             <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2">
               Filtrar <Filter size={16} />
             </button>
           </div>
 
+          {/* Tabla */}
           <div className="overflow-x-auto">
             <table className="w-full text-sm bg-[#f3f1dd] rounded-md overflow-hidden">
               <thead className="text-left font-semibold">
@@ -106,6 +77,30 @@ export default function ProductList() {
                 </tr>
               </thead>
               <tbody className="bg-white text-[#333]">
+                {isLoading && (
+                  <tr>
+                    <td colSpan={9} className="p-4 text-center">
+                      Cargando productos...
+                    </td>
+                  </tr>
+                )}
+
+                {isError && (
+                  <tr>
+                    <td colSpan={9} className="p-4 text-center text-red-600">
+                      Error al cargar productos
+                    </td>
+                  </tr>
+                )}
+
+                {!isLoading && products?.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="p-4 text-center text-gray-500">
+                      No hay productos registrados
+                    </td>
+                  </tr>
+                )}
+
                 {products?.map((product) => (
                   <tr key={product._id} className="border-t">
                     <td className="p-3 rounded-lg">
@@ -116,56 +111,48 @@ export default function ProductList() {
                     </td>
                     <td className="p-3">
                       <img
-                        src={product.photoUrl || 'https://via.placeholder.com/40'}
-                        alt={product.productName}
+                        src={product.photoUrl || "https://via.placeholder.com/40"}
                         className="w-10 h-10 rounded-md object-cover"
+                        alt={product.productName}
                       />
                     </td>
                     <td className="p-3">{product.productName}</td>
-                    <td className="p-3 capitalize">{product.category}</td>
-                    <td className="p-3">{product.price.toFixed(2)}</td>
-                    <td className="p-3">{new Date(product.createdAt || '').toLocaleDateString()}</td>
+                    <td className="p-3">{product.category}</td>
+                    <td className="p-3">${product.price.toFixed(2)}</td>
                     <td className="p-3">
-                      <button className="bg-[#505341] text-white px-3 py-1 rounded-md">
+                      {new Date(product.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => navigate(`/products/${product._id}`)}
+                        className="bg-[#505341] text-white px-3 py-1 rounded-md hover:opacity-90"
+                      >
                         Ver detalle
                       </button>
                     </td>
                     <td className="p-3">
                       <button
-                        onClick={() => openEditModal(product)}
-                        className="bg-yellow-400 text-black p-2 rounded-md"
+                        onClick={() => navigate(`/products/${product._id}/edit`)}
+                        className="bg-yellow-400 text-black p-2 rounded-md hover:opacity-90"
                       >
                         <Pencil size={16} />
                       </button>
                     </td>
                     <td className="p-3">
                       <button
-                        onClick={() => handleDelete(product)}
-                        className="bg-red-600 text-white p-2 rounded-md"
+                        onClick={() => handleDelete(product._id)}
+                        className="bg-red-600 text-white p-2 rounded-md hover:opacity-90"
                       >
                         <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
                 ))}
-                {products?.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="p-4 text-center text-gray-500">
-                      No hay productos registrados.
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
-
-      {isEditModalOpen && selectedProduct && (
-        <EditProductModal product={selectedProduct} onClose={closeEditModal} />
-      )}
-
-      {isCreateModalOpen && <CreateProductModal onClose={closeCreateModal} />}
     </div>
   );
 }
