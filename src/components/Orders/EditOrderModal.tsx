@@ -1,118 +1,190 @@
-import { X, Upload, ChevronDown } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { X, Plus, Trash2 } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { getProducts } from '../../api/ProductAPI';
+import { getOrderById, updateOrder } from '../../api/OrderAPI';
+import { orderFormSchema, type EditOrderFormData, type OrderStatus, type OrderPaymentMethod } from '../../types';
 
 interface EditOrderModalProps {
+    orderId: string;
     onClose: () => void;
 }
-export default function EditOrderModal({ onClose }: EditOrderModalProps) {
+
+const statusOptions: { value: OrderStatus, label: string }[] = [
+    { value: 'pending', label: 'Pendiente' },
+    { value: 'paid', label: 'Pagada' },
+];
+
+const paymentMethodOptions: { value: OrderPaymentMethod, label: string }[] = [
+    { value: 'cash', label: 'Efectivo' },
+    { value: 'transaction', label: 'Transferencia' },
+];
 
 
-    return (
-        <div className="fixed inset-0 bg-gray bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-[2px]">
-            <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                {/* ESTE ES EL HEADER */}
-                <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
-                    <h2 className="text-lg font-semibold">Editar orden</h2>
-                    <button className="text-white hover:text-gray-300 transition-colors"
-                        onClick={onClose}
-                    >
-                        <X size={20} />
+export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const queryClient = useQueryClient();
+
+    const { data: orderData, isLoading: isLoadingOrder } = useQuery({
+        queryKey: ['order', orderId],
+        queryFn: () => getOrderById(orderId),
+        enabled: !!orderId,
+    });
+
+    const { data: availableProducts, isLoading: isLoadingProducts } = useQuery({
+        queryKey: ['products'],
+        queryFn: getProducts
+    });
+
+    const { register, handleSubmit, control, watch, reset, formState: { errors, isSubmitting } } = useForm<EditOrderFormData>({
+        resolver: zodResolver(orderFormSchema),
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "products"
+    });
+
+    useEffect(() => {
+        if (orderData) {
+            const formProducts = orderData.products.map(item => ({
+                product: item.product._id,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice
+            }));
+            reset({ ...orderData, products: formProducts });
+        }
+    }, [orderData, reset]);
+
+    const productsInOrder = watch('products');
+
+    const total = productsInOrder?.reduce((sum, item) => {
+        const quantity = Number(item.quantity) || 0;
+        const price = item.unitPrice || 0;
+        return sum + (quantity * price);
+    }, 0) ?? 0;
+
+    const mutation = useMutation({
+        mutationFn: updateOrder,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
+            queryClient.invalidateQueries({ queryKey: ['order', orderId] });
+            toast.success("Orden actualizada");
+            onClose();
+        },
+        onError: (error) => toast.error(error.message)
+    });
+
+    const handleFormSubmit = (formData: EditOrderFormData) => {
+        mutation.mutate({ formData, orderId });
+    };
+
+    const handleAddProduct = (productId: string) => {
+        const product = availableProducts?.find(p => p._id === productId);
+        if (!product || fields.some(field => field.product === productId)) {
+            toast.info("Este producto ya está en la orden o no está disponible.");
+            return;
+        }
+        append({ product: product._id, quantity: 1, unitPrice: product.price });
+    };
+
+    const filteredProducts = useMemo(() =>
+        availableProducts?.filter(p => p.productName.toLowerCase().includes(searchTerm.toLowerCase())) || [],
+        [availableProducts, searchTerm]);
+
+    if (isLoadingOrder) return <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><p className="text-white">Cargando orden...</p></div>;
+
+    if (orderData) return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="bg-[#F9F9F9] w-full max-w-6xl rounded-xl shadow-2xl flex flex-col max-h-[95vh]">
+                <div className="bg-[#575B4F] text-white px-8 py-5 text-xl font-semibold flex justify-between items-center">
+                    Editar Orden #{orderData.orderNumber}
+                    <button type="button" onClick={onClose} className="p-1 rounded-full hover:bg-white/20"><X size={24} /></button>
+                </div>
+
+                <div className="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
+                    <div className="flex flex-col gap-4">
+                        <h3 className="font-bold text-lg">Agregar Más Productos</h3>
+                        <input type="text" placeholder="Buscar producto..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full px-3 py-2 rounded-md border" />
+                        <div className="overflow-y-auto max-h-96 border rounded-lg bg-white">
+                            {isLoadingProducts ? <p className='p-4 text-center text-gray-500'>Cargando productos...</p> : filteredProducts.map(product => (
+                                <div key={product._id} className="flex items-center justify-between p-2 border-b hover:bg-gray-50">
+                                    <span>{product.productName} ({product.price.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })})</span>
+                                    <button type="button" onClick={() => handleAddProduct(product._id)} className="bg-[#8A8D81] text-white p-1 rounded-md text-sm hover:bg-[#777a6f]">
+                                        <Plus size={16} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        <h3 className="font-bold text-lg">Orden Actual</h3>
+                        <div className="overflow-x-auto rounded-lg border border-gray-300">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-[#F2EEDC] text-gray-700 uppercase">
+                                    <tr>
+                                        <th className="px-4 py-2">Producto</th>
+                                        <th className="px-4 py-2">Cantidad</th>
+                                        <th className="px-4 py-2 text-right">Precio</th>
+                                        <th className="px-4 py-2 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y">
+                                    {fields.map((field, index) => {
+                                        const product = availableProducts?.find(p => p._id === field.product);
+                                        return (
+                                            <tr key={field.id}>
+                                                <td className="px-4 py-2">{product?.productName ?? '...'}</td>
+                                                <td className="px-4 py-2 w-24">
+                                                    <input type="number" {...register(`products.${index}.quantity`, { valueAsNumber: true })} className="w-full p-1 border rounded-md" />
+                                                </td>
+                                                <td className="px-4 py-2 text-right">{watch(`products.${index}.unitPrice`).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
+                                                <td className="px-4 py-2 text-center">
+                                                    <button type="button" onClick={() => remove(index)} className="text-red-600 hover:text-red-800 p-1 rounded-md">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className='grid grid-cols-2 gap-4'>
+                            <div>
+                                <label className='block text-sm font-medium text-gray-700'>Estado</label>
+                                <select {...register("status")} className='w-full p-2 mt-1 border rounded-md'>
+                                    {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className='block text-sm font-medium text-gray-700'>Método de Pago</label>
+                                <select {...register("paymentMethod")} className="w-full p-2 mt-1 border rounded-md">
+                                    {paymentMethodOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-center mt-auto pt-4">
+                            <div className="text-lg font-semibold text-right w-full">
+                                Total: <span className="text-green-700 font-bold">{total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
+                            </div>
+                        </div>
+                        {errors.products && <p className="text-red-500 text-sm font-bold text-center mt-2">{errors.products.message ?? errors.products.root?.message}</p>}
+                    </div>
+                </div>
+
+                <div className="flex justify-end gap-4 p-4 border-t bg-gray-50">
+                    <button type="button" onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-2 rounded-md">Cancelar</button>
+                    <button type="submit" disabled={isSubmitting || mutation.isPending} className="bg-[#575B4F] hover:bg-[#43463c] text-white px-5 py-2 rounded-md disabled:opacity-50">
+                        {isSubmitting || mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
                     </button>
                 </div>
-
-                {/* ESTE ES EL CONTENIDO DEL MODAL */}
-                <div className="p-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left Column */}
-                        <div className="space-y-4">
-                            {/* Nombre */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Nombre
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F]"
-                                />
-                            </div>
-
-                            {/* Categoría */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Categoría
-                                </label>
-                                <div className="relative">
-                                    <select className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F] appearance-none">
-                                        <option value="">Seleccionar categoría</option>
-                                        <option value="bebidas">Bebidas</option>
-                                        <option value="comida">Comida</option>
-                                        <option value="postres">Postres</option>
-                                    </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Precio($MX)
-                                </label>
-                                <input
-                                    type="number"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F]"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Costo($MX)
-                                </label>
-                                <input
-                                    type="number"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F]"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Descripción
-                                </label>
-                                <textarea
-                                    rows={4}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F] resize-none"
-                                    placeholder="Describe el producto..."
-                                />
-                            </div>
-                        </div>
-
-                        {/* ESTA ES LA PARTE DONDE SE SUBE LA IMAGEN */}
-                        <div className="flex flex-col">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Imagen del producto
-                            </label>
-                            <div className="flex-1 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-6 hover:border-gray-400 transition-colors min-h-[300px]">
-                                <Upload className="text-gray-400 mb-2" size={32} />
-                                <span className="text-gray-500 text-sm text-center">
-                                    Añadir imagen
-                                </span>
-                                <span className="text-gray-400 text-xs text-center mt-1">
-                                    Haz clic o arrastra una imagen aquí
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* BOTONES */}
-                    <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-                        <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                            onClick={onClose}
-                        >
-                            Cancelar
-                        </button>
-                        <button className="px-4 py-2 bg-[#575B4F] text-white rounded-md hover:opacity-90 transition-colors">
-                            Guardar
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     );
 }

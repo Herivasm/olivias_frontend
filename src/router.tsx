@@ -4,10 +4,7 @@ import DashboardView from "./views/DashboardView";
 import ProductDetailsView from "./views/Products/ProductDetailsView";
 import OrdersListView from "./views/Orders/OrdersListView";
 // import Sidebar from "./layouts/sidebar";
-
-import CategoryOrderView from "./views/Orders/CategoryOrderView";
-import OrderDeailsView from "./views/Orders/OrderDetailsView";
-import AddProductsOrderView from "./views/Orders/AddProductsOrderView";
+import OrderDetailsView from "./views/Orders/OrderDetailsView";
 
 
 // IMPORTACIONES DE SUPPLIERS Y SUPPLIES
@@ -33,11 +30,7 @@ export default function Router() {
 
                     // ORDENES
                     <Route path="/orders" element={<OrdersListView />} />
-                    <Route path="/orders/category" element={<CategoryOrderView />} />
-                    <Route path="/orders/details" element={<OrderDeailsView />} />
-                    <Route path="/orders/addProductOrder" element={<AddProductsOrderView />} />
-
-
+                    <Route path="/orders/:orderId" element={<OrderDetailsView />} />
 
                     // SUPPLIERS
                     <Route path="/suppliers" element={<SupplierstList />} />
@@ -50,14 +43,6 @@ export default function Router() {
 
                     //caja
                     <Route path="/caja" element={<CajaView />} />
-
-
-
-
-
-
-
-
                 </Route>
             </Routes>
         </BrowserRouter>

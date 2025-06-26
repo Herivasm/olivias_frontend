@@ -4,7 +4,7 @@ import { getProductById } from "../../api/ProductAPI";
 import { toast } from "react-toastify";
 import { ArrowLeft } from "lucide-react";
 import ErrorMessage from "../../components/ErrorMessage";
-import type { Product } from "../../types"; 
+import type { Product } from "../../types";
 
 function formatCategory(category: string) {
   const categoryMap: { [key: string]: string } = {
@@ -23,8 +23,6 @@ function formatCategory(category: string) {
 export default function ProductDetailsView() {
   const { productId } = useParams<{ productId: string }>();
 
-  // --- LA CORRECCIÓN ESTÁ AQUÍ ---
-  // Especificamos los tipos <Product, Error> que useQuery manejará.
   const { data: product, isLoading, isError, error } = useQuery<Product, Error>({
     queryKey: ["product", productId],
     queryFn: () => getProductById(productId!),
@@ -38,10 +36,8 @@ export default function ProductDetailsView() {
   if (isLoading) return <p className="text-center text-lg p-10">Cargando producto...</p>;
   if (isError) return <div className="p-10"><ErrorMessage>{error.message}</ErrorMessage></div>;
 
-  // Con el tipo especificado, TypeScript ahora sabe que si 'product' existe, tiene todas sus propiedades.
   if (product) return (
     <div className="bg-[#F9FAFB] rounded-xl shadow-lg max-w-5xl mx-auto my-12">
-      {/* Header de la tarjeta */}
       <div className="bg-[#575B4F] text-white px-6 py-4 flex items-center justify-between rounded-t-xl">
         <h2 className="text-xl font-semibold tracking-wide">DETALLE DEL PRODUCTO</h2>
         <Link to={'/'}>
@@ -70,7 +66,7 @@ export default function ProductDetailsView() {
             </div>
             <div className="bg-white border rounded-lg p-4 shadow-sm flex-1">
               <span className="text-sm font-bold text-gray-500 uppercase block mb-1">Costo ($MX):</span>
-              <span className="text-lg text-red-700 font-medium">${product.cost.toFixed(2)}</span>
+              <span className="text-2xl text-red-500 font-bold">${product.cost.toFixed(2)}</span>
             </div>
           </div>
 
@@ -80,7 +76,6 @@ export default function ProductDetailsView() {
           </div>
         </div>
 
-        {/* Columna Derecha - Imagen */}
         <div className="flex flex-col items-center lg:items-start">
           <span className="text-sm font-bold text-gray-500 uppercase block mb-2">Imagen del producto</span>
           <div className="w-full max-w-sm">

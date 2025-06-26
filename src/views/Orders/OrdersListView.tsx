@@ -1,122 +1,133 @@
-import { useQuery } from "@tanstack/react-query";
-// import { getProducts } from "../api/ProductAPI";
-import { Link } from "react-router-dom";
-// import CreateProductView from "./Products/CreateProductView";
-// import EditProductView from "./Products/EditProductView";
-import EditOrderView from "./EditOrderView";
-import CreateOrderView from "./CreateOrderView";
-
-
-import { Pencil, Trash2, Filter, Plus, Search } from 'lucide-react';
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { Plus, Pencil, Trash2, Search, Filter, Eye } from 'lucide-react';
 
+import { getOrders, deleteOrder } from "../../api/OrderAPI";
+import CreateOrderModal from "../../components/Orders/CreateOrderModal";
+import EditOrderModal from "../../components/Orders/EditOrderModal";
+
+const paymentMethodLabels: { [key: string]: string } = {
+    cash: 'Efectivo',
+    transaction: 'Transferencia'
+};
+const statusLabels: { [key: string]: string } = {
+    pending: 'Pendiente',
+    paid: 'Pagada'
+};
+const statusColors: { [key: string]: string } = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    paid: 'bg-green-100 text-green-800'
+};
 
 export default function OrdersListView() {
-    {/* const { data, isLoading } = useQuery({
-        queryKey: ["products"],
-        queryFn: getProducts,
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
+
+    const queryClient = useQueryClient();
+
+    const { data: orders, isLoading, isError, error } = useQuery({
+        queryKey: ["orders"],
+        queryFn: getOrders,
     });
 
-    if (isLoading) return <p className="text-center text-lg">Cargando...</p>; */}
+    const deleteMutation = useMutation({
+        mutationFn: deleteOrder,
+        onSuccess: (data) => {
+            toast.success(data.message || "Orden eliminada");
+            queryClient.invalidateQueries({ queryKey: ["orders"] });
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        }
+    });
 
-    {/* FUNCIONES PARA QUE FUNCIONE EL MODAL */ }
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
-
-    const openEditModal = () => setIsEditModalOpen(true);
-    const closeEditModal = () => setIsEditModalOpen(false);
+    if (isLoading) return <p className="text-center text-2xl font-bold mt-10">Cargando Órdenes...</p>;
+    if (isError) return <p className="text-center text-red-600 text-2xl font-bold mt-10">Error: {error.message}</p>;
 
     return (
-        <div className="flex min-h-screen">
-            {/* ESTE ES EL SIDEBAR */}
-
-
-
-            {/* ESTA ES LA PARTE DONDE SE ENCUENTRA LA ESTRUCTURA DE LA TABLA*/}
-            <div className="flex-1 p-6 bg-[#f4f5f5]">
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-xl font-bold text-[#505341]">Lista de ordenes</h1>
-                    <button className="bg-[#575B4F] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90"
-                        onClick={openModal}
+        <>
+            <div className="flex-1 p-6 md:p-8 bg-[#f4f5f5]">
+                <header className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl md:text-3xl font-bold text-[#505341]">Administrador de Órdenes</h1>
+                    <button
+                        className="bg-[#575B4F] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
+                        onClick={() => setIsCreateModalOpen(true)}
                     >
-                        Registrar orden <Plus size={16} />
+                        <Plus size={20} />
+                        <span className="hidden sm:inline">Registrar Orden</span>
                     </button>
-                </div>
+                </header>
 
-                <div className="bg-[#575B4F] p-4 rounded-lg">
-                    {/* ESTO ES DEL FILTRO Y LO DE LA BUSQUEDA */}
-                  <div className="flex flex-wrap gap-2 items-center mb-4">
-                    <div className="relative flex-1 w-full md:w-3/4">
-                        <Search
-                        size={18}
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                        />
-                        <input
-                        type="text"
-                        placeholder="Buscar producto..."
-                        className="w-full pl-10 pr-4 py-2 rounded-md bg-white"
-                        />
-                    </div>
-                    <button className="bg-white text-[#505341] px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 w-full md:w-auto">
-                        Filtrar <Filter size={16} />
-                    </button>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                    <div className="flex flex-wrap gap-2 items-center mb-4">
+                        <div className="relative flex-1 min-w-[200px]">
+                            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input type="text" placeholder="Buscar por número de órden..." className="w-full pl-10 pr-4 py-2 rounded-md border" />
+                        </div>
+                        <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2 hover:bg-gray-300">
+                            Filtrar <Filter size={16} />
+                        </button>
                     </div>
 
-                    {/* ESTA ES LA TABÑA */}
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm bg-[#f3f1dd] rounded-md overflow-hidden">
-                            <thead className="text-left font-semibold">
+                        <table className="w-full text-sm text-left text-gray-600">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
                                 <tr>
-                                    <th className="p-3">Número de órden</th>
-                                    <th className="p-3">Tipo de pago</th>
-                                    <th className="p-3">Categoria</th>
-                                    
-                                    <th className="p-3">Total a pagar($MXN)</th>
-                                    
-                                    <th className="p-3">Detalle</th>
-                                    <th className="p-3">Editar</th>
-                                    <th className="p-3">Eliminar</th>
+                                    <th scope="col" className="px-4 py-3"># Orden</th>
+                                    <th scope="col" className="px-4 py-3">Fecha</th>
+                                    <th scope="col" className="px-4 py-3">Total</th>
+                                    <th scope="col" className="px-4 py-3">Método de Pago</th>
+                                    <th scope="col" className="px-4 py-3">Estado</th>
+                                    <th scope="col" className="px-4 py-3 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white text-[#333]">
-
-                                <tr className="border-t">
-                                    
-                                    <td className="p-3">nombree</td>
-                                    <td className="p-3">una categoria</td>
-                                    <td className="p-3">preciooo</td>
-                                    <td className="p-3">esta es una fecha</td>
-                                    <td className="p-3">
-                                        <Link
-                                            to={'../orders/details'}
-                                        >
-
-                                            <button className="bg-[#505341] text-white px-3 py-1 rounded-md hover:opacity-90">Ver detalle</button>
-                                        </Link>
-                                    </td>
-                                    <td className="p-3">
-                                        <button className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500"
-
-                                            onClick={openEditModal}>
-                                            <Pencil size={16} />
-                                        </button>
-                                    </td>
-                                    <td className="p-3">
-                                        <button className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700">
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </td>
-                                </tr>
+                            <tbody>
+                                {orders?.map(order => (
+                                    <tr key={order._id} className="border-b hover:bg-gray-50">
+                                        <td className="px-4 py-2 font-mono">
+                                            <Link to={`/orders/${order._id}`} className="text-blue-600 hover:underline">
+                                                {order.orderNumber}
+                                            </Link>
+                                        </td>
+                                        <td className="px-4 py-2">{new Date(order.createdAt).toLocaleDateString('es-MX')}</td>
+                                        <td className="px-4 py-2 font-medium text-gray-900">{order.total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
+                                        <td className="px-4 py-2">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</td>
+                                        <td className="px-4 py-2">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}>
+                                                {statusLabels[order.status] || order.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex justify-center items-center gap-2">
+                                                <Link to={`/orders/${order._id}`} className="p-2 text-blue-600 hover:text-blue-800 transition-colors" title="Ver Detalles">
+                                                    <Eye size={18} />
+                                                </Link>
+                                                <button onClick={() => setEditingOrderId(order._id)} className="p-2 text-yellow-600 hover:text-yellow-800 transition-colors" title="Editar Orden">
+                                                    <Pencil size={18} />
+                                                </button>
+                                                <button onClick={() => { if (confirm(`¿Seguro que quieres eliminar la orden #${order.orderNumber}?`)) { deleteMutation.mutate(order._id); } }} className="p-2 text-red-600 hover:text-red-800 transition-colors" title="Eliminar Orden">
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            {isModalOpen && <CreateOrderView onClose={closeModal} />}
-            {isEditModalOpen && <EditOrderView onClose={closeEditModal} />}
-        </div>
+
+            {isCreateModalOpen && <CreateOrderModal onClose={() => setIsCreateModalOpen(false)} />}
+
+            {editingOrderId && (
+                <EditOrderModal
+                    orderId={editingOrderId}
+                    onClose={() => setEditingOrderId(null)}
+                />
+            )}
+        </>
     );
 }

@@ -37,5 +37,89 @@ export const dashboardProductSchema = z.array(productSchema)
 export type Product = z.infer<typeof productSchema>
 export type ProductFormData = z.infer<typeof productFormDataSchema>
 
-/** SUPPLIES */
+/** Orders */
+export const orderStatusSchema = z.enum([
+    "pending",
+    "paid",
+]);
 
+export type OrderStatus = z.infer<typeof orderStatusSchema>
+
+export const paymentMethodSchema = z.enum([
+    "cash",
+    "transaction"
+]);
+
+export type OrderPaymentMethod = z.infer<typeof paymentMethodSchema>;
+
+export const orderItemSchema = z.object({
+    _id: z.string(),
+    product: productSchema,
+    quantity: z.number(),
+    unitPrice: z.number(),
+});
+
+export const orderSchema = z.object({
+    _id: z.string(),
+    orderNumber: z.string(),
+    notes: z.string().optional(),
+    total: z.number(),
+    products: z.array(orderItemSchema),
+    paymentMethod: paymentMethodSchema,
+    status: orderStatusSchema,
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+export const dashboardOrderSchema = z.array(
+    orderSchema.pick({
+        _id: true,
+        orderNumber: true,
+        total: true,
+        status: true,
+        createdAt: true,
+        paymentMethod: true
+    })
+);
+
+const orderProductFormSchema = z.object({
+    product: z.string(),
+    quantity: z.number().int().min(1, { message: 'La cantidad debe ser al menos 1.' }),
+    unitPrice: z.number(),
+});
+
+export const orderFormSchema = z.object({
+    notes: z.string().optional(),
+    paymentMethod: paymentMethodSchema,
+    status: orderStatusSchema,
+    products: z.array(orderProductFormSchema).min(1, { message: 'La orden debe tener al menos un producto.' }),
+});
+
+export const createOrderSchema = orderFormSchema.omit({ status: true });
+export type CreateOrderFormData = z.infer<typeof createOrderSchema>;
+
+export const orderProductFormDataSchema = z.object({
+    product: z.string(),
+    quantity: z.number(),
+    unitPrice: z.number(),
+});
+
+export const editOrderSchema = z.object({
+    notes: z.string().optional(),
+    paymentMethod: paymentMethodSchema,
+    status: orderStatusSchema,
+});
+export type EditOrderFormData = z.infer<typeof orderFormSchema>;
+export const orderFormDataSchema = z.object({
+    notes: z.string().optional(),
+    products: z.array(orderProductFormDataSchema),
+    paymentMethod: paymentMethodSchema,
+    status: orderStatusSchema
+});
+
+export const partialOrderFormDataSchema = orderFormDataSchema.partial();
+
+export type Order = z.infer<typeof orderSchema>
+export type OrderItem = z.infer<typeof orderItemSchema>
+export type OrderFormData = z.infer<typeof orderFormDataSchema>
+export type PartialOrderFormData = z.infer<typeof partialOrderFormDataSchema>;
