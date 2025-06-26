@@ -15,7 +15,7 @@ import EditSuppliers from "./views/Suppliers/EditSuppliersView";
 import SuppliesDetailsView from "./views/Supplies/SuppliesDetailsView";
 
 // IMPORTACIONES DE CAJA
-import CajaView from "./views/caja/CajaListView";
+import CashClosingView from "./views/CashClosing/CashClosingView";
 
 
 export default function Router() {
@@ -42,7 +42,7 @@ export default function Router() {
                     <Route path="/supplies/:id" element={<SuppliesDetailsView />} />
 
                     //caja
-                    <Route path="/caja" element={<CajaView />} />
+                    <Route path="/cash-closing" element={<CashClosingView />} />
                 </Route>
             </Routes>
         </BrowserRouter>

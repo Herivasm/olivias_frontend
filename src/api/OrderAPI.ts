@@ -6,7 +6,8 @@ import {
     type Order,
     type OrderFormData,
     type CreateOrderFormData,
-    type EditOrderFormData
+    type EditOrderFormData,
+    dailySalesReportSchema
 } from "../types";
 
 /**
@@ -130,5 +131,30 @@ export async function deleteOrder(id: Order['_id']) {
             throw new Error(error.response.data.error);
         }
         throw new Error("No se pudo eliminar la orden");
+    }
+}
+
+/**
+ * Obtiene un resumen de ventas y la lista de órdenes para una fecha específica.
+ * @param date - La fecha a consultar en formato YYYY-MM-DD.
+ * @returns Un objeto con el resumen y la lista de órdenes.
+ */
+export async function getSalesByDate(date: string) {
+    try {
+        const { data } = await api.get('/orders/by-date', {
+            params: { date }
+        });
+        const response = dailySalesReportSchema.safeParse(data);
+        if (response.success) {
+            return response.data;
+        } else {
+            console.error("Error de validación Zod en getSalesByDate:", response.error.issues);
+            throw new Error("La respuesta del reporte diario no es válida");
+        }
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
+        }
+        throw new Error("No se pudo obtener el reporte de ventas");
     }
 }
