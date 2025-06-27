@@ -64,7 +64,7 @@ export default function CashClosingView() {
                                 <thead className="text-left font-semibold">
                                     <tr>
                                         <th className="p-3">Orden</th>
-                                        <th className="p-3">Fecha</th>
+                                        <th className="p-3">Hora</th>
                                         <th className="p-3">Tipo de pago</th>
                                         <th className="p-3">Total ($MXN)</th>
                                         <th className="p-3">Detalle de la orden</th>
