@@ -1,11 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProducts, deleteProduct } from "../api/ProductAPI";
+// DashboardView.tsx (Código completo y final)
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getProducts } from "../api/ProductAPI";
 import { Link } from "react-router-dom";
 import ProductModal from "../components/Products/ProductModal";
 import { Pencil, Trash2, Filter, Plus, Search, Eye } from 'lucide-react';
 import { useState, useMemo } from "react";
 import type { Product } from "../types";
 import { toast } from "react-toastify";
+import ProductDeleteModal from "../components/Products/ProductDeleteModal";
 
 const categoryTranslations: { [key: string]: string } = {
     hotDrinks: "Bebidas Calientes",
@@ -27,19 +30,11 @@ export default function DashboardView() {
         isOpen: false,
         productToEdit: null,
     });
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["products"],
         queryFn: getProducts,
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: deleteProduct,
-        onSuccess: (message) => {
-            toast.success(message);
-            queryClient.invalidateQueries({ queryKey: ["products"] });
-        },
-        onError: (error) => toast.error(error.message)
     });
 
     const filteredData = useMemo(() => {
@@ -116,7 +111,11 @@ export default function DashboardView() {
                                             <button onClick={() => handleOpenModal(product)} className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500" title="Editar">
                                                 <Pencil size={16} />
                                             </button>
-                                            <button onClick={() => { if (confirm(`¿Seguro que quieres eliminar "${product.productName}"?`)) deleteMutation.mutate(product._id) }} disabled={deleteMutation.isPending} className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700" title="Eliminar">
+                                            <button 
+                                                onClick={() => setProductToDelete(product)} 
+                                                className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700" 
+                                                title="Eliminar"
+                                            >
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>
@@ -132,10 +131,22 @@ export default function DashboardView() {
                 </div>
             </div>
 
+            {/* Modal de Crear/Editar */}
             {modalState.isOpen && (
                 <ProductModal
                     onClose={handleCloseModal}
                     productToEdit={modalState.productToEdit}
+                />
+            )}
+            
+            {/* Modal de Eliminación */}
+            {productToDelete && (
+                <ProductDeleteModal
+                    product={productToDelete}
+                    onClose={() => setProductToDelete(null)}
+                    onSuccess={() => {
+                        queryClient.invalidateQueries({ queryKey: ["products"] });
+                    }}
                 />
             )}
         </div>

@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from 'react'
-import { Pencil, Trash2, Plus } from 'lucide-react'
+import { Pencil, Trash2, Plus, Eye } from 'lucide-react'
 import CreateSuppliesView from './CreateSuppliesView'
 import EditSuppliesView from './EditSuppliesView'
 import DeleteConfirmationModal from '../../components/Supplies/DeleteConfirmationModal'
@@ -18,9 +17,7 @@ export default function SuppliesList() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedSupply, setSelectedSupply] = useState<Supply | null>(null)
 
-
   const pagination = usePagination([], { itemsPerPage: 10 })
-
 
   const {
     searchTerm,
@@ -119,15 +116,13 @@ export default function SuppliesList() {
                   <th className="p-3">Nombre del insumo</th>
                   <th className="p-3">Stock</th>
                   <th className="p-3">Medida</th>
-                  <th className="p-3">Detalle</th>
-                  <th className="p-3">Editar</th>
-                  <th className="p-3">Eliminar</th>
+                  <th className="p-3 text-center">Acciones</th> {/* Aquí unificamos */}
                 </tr>
               </thead>
               <tbody className="bg-white text-[#333]">
                 {paginatedSupplies.paginatedItems.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-gray-500">
+                    <td colSpan={5} className="p-8 text-center text-gray-500">
                       {filteredSupplies.length === 0 
                         ? (supplies.length === 0 
                           ? 'No hay insumos registrados' 
@@ -157,30 +152,28 @@ export default function SuppliesList() {
                       <td className="p-3">
                         <span className="capitalize">{supply.measure}</span>
                       </td>
-                      <td className="p-3">
-                        <Link to={`/supplies/${supply._id}`}>
-                          <button className="bg-[#505341] text-white px-3 py-1 rounded-md hover:bg-[#404030] transition-colors cursor-pointer">
-                            Ver detalle
+                      <td className="p-3 text-center">
+                        <div className="inline-flex gap-2 justify-center">
+                          <Link to={`/supplies/${supply._id}`} title="Ver detalle">
+                            <button className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors cursor-pointer">
+                              <Eye size={16} />
+                            </button>
+                          </Link>
+                          <button
+                            className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors cursor-pointer"
+                            onClick={() => openEditModal(supply)}
+                            title="Editar insumo"
+                          >
+                            <Pencil size={16} />
                           </button>
-                        </Link>
-                      </td>
-                      <td className="p-3">
-                        <button
-                          className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors cursor-pointer"
-                          onClick={() => openEditModal(supply)}
-                          title="Editar insumo"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                      </td>
-                      <td className="p-3">
-                        <button 
-                          className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
-                          onClick={() => openDeleteModal(supply)}
-                          title="Eliminar insumo"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                          <button 
+                            className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+                            onClick={() => openDeleteModal(supply)}
+                            title="Eliminar insumo"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

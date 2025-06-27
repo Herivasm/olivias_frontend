@@ -10,9 +10,11 @@ interface CreateSuppliersModalProps {
   onCreated?: () => void
 }
 
+// --- MODIFICACIÓN 1: Actualizar el esquema de validación ---
 const supplierSchema = z.object({
   supplierName: z.string().min(1, "El nombre del proveedor es requerido"),
-  contact: z.string().min(1, "El contacto es requerido"),
+  // Se valida que el contacto sea una cadena de 10 dígitos numéricos
+  contact: z.string().regex(/^\d{10}$/, "El número de teléfono debe tener 10 dígitos"),
 })
 
 type SupplierFormData = z.infer<typeof supplierSchema>
@@ -72,11 +74,13 @@ export default function CreateSuppliersModal({ onClose, onCreated }: CreateSuppl
               )}
             </div>
 
-            {/* Contacto */}
+            {/* --- MODIFICACIÓN 2: Actualizar el campo de Contacto --- */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Contacto</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Contacto (Teléfono)</label>
               <input
-                type="text"
+                type="tel" // Tipo semántico para números de teléfono
+                maxLength={10} // Límite de caracteres
+                placeholder="Ej: 1234567890"
                 {...register("contact")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#575B4F] focus:border-[#575B4F]"
               />

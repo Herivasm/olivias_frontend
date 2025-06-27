@@ -46,15 +46,25 @@ export default function ProductModal({ onClose, productToEdit }: ProductModalPro
     const modalTitle = productToEdit ? "EDITAR PRODUCTO" : "REGISTRAR PRODUCTO";
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] overflow-y-auto">
-                <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center sticky top-0 z-10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/40 backdrop-blur-sm p-4">
+            {/* Contenedor principal del modal */}
+            <div className="bg-white rounded-lg w-full max-w-3xl max-h-[92vh] shadow-xl flex flex-col">
+                
+                {/* Encabezado fijo */}
+                <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center sticky top-0 z-10 flex-shrink-0">
                     <h2 className="text-lg font-semibold">{modalTitle}</h2>
-                    <button onClick={onClose} className="hover:text-gray-300">
-                        <X size={24} />
+                    <button
+                        onClick={onClose}
+                        title="Cerrar"
+                        aria-label="Cerrar"
+                        className="hover:text-gray-300 p-2 rounded-md transition"
+                    >
+                        <X size={20} />
                     </button>
                 </div>
-                <div className="p-6">
+
+                {/* Contenido con scroll */}
+                <div className="overflow-y-auto p-6"> 
                     <ProductForm
                         onSubmit={handleSubmit}
                         initialData={productToEdit ?? undefined}

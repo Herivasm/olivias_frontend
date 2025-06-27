@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Pencil, Trash2, Plus } from 'lucide-react'
+import { Pencil, Trash2, Plus, Eye } from 'lucide-react'
 import CreateProviderView from './CreateSuppliersView'
 import EditSuppliersView from './EditSuppliersView'
 import DeleteSupplierConfirmationModal from '../../components/Suppliers/DeleteSuppliersConfirmationModal'
@@ -19,9 +19,7 @@ export default function SuppliersListView() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
 
-
     const pagination = usePagination([], { itemsPerPage: 10 })
-
 
     const {
         searchTerm,
@@ -35,7 +33,6 @@ export default function SuppliersListView() {
         clearFilters,
         hasActiveFilters
     } = useSuppliersFilters(suppliers, supplies, pagination.resetPagination)
-
 
     const paginatedSuppliers = usePagination(filteredSuppliers, { itemsPerPage: 10 })
 
@@ -95,8 +92,6 @@ export default function SuppliersListView() {
 
     return (
         <div className="flex min-h-screen">
-
-
             <div className="flex-1 p-6 bg-[#f4f5f5]">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-xl font-bold text-[#505341]">Lista de Proveedores</h1>
@@ -129,15 +124,13 @@ export default function SuppliersListView() {
                                 <tr>
                                     <th className="p-3">Nombre</th>
                                     <th className="p-3">Contacto</th>
-                                    <th className="p-3">Detalle</th>
-                                    <th className="p-3">Editar</th>
-                                    <th className="p-3">Eliminar</th>
+                                    <th className="p-3 text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white text-[#333]">
                                 {paginatedSuppliers.paginatedItems.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="p-8 text-center text-gray-500">
+                                        <td colSpan={3} className="p-8 text-center text-gray-500">
                                             {filteredSuppliers.length === 0
                                                 ? (suppliers.length === 0
                                                     ? 'No hay proveedores registrados'
@@ -154,29 +147,27 @@ export default function SuppliersListView() {
                                             </td>
                                             <td className="p-3">{supplier.contact}</td>
                                             <td className="p-3">
-                                                <Link to={`/suppliers/${supplier._id}`}>
-                                                    <button className="cursor-pointer bg-[#505341] text-white px-3 py-1 rounded-md hover:bg-[#404030] transition-colors">
-                                                        Ver detalle
+                                                <div className="flex justify-center items-center gap-2">
+                                                    <Link to={`/suppliers/${supplier._id}`} title="Ver detalle">
+                                                        <button className="bg-blue-500  text-white p-2 rounded-md hover:bg-blue-600 transition-colors cursor-pointer">
+                                                            <Eye size={16}  />
+                                                        </button>
+                                                    </Link>
+                                                    <button
+                                                        className="bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors cursor-pointer"
+                                                        onClick={() => openEditModal(supplier)}
+                                                        title="Editar proveedor"
+                                                    >
+                                                        <Pencil size={16} />
                                                     </button>
-                                                </Link>
-                                            </td>
-                                            <td className="p-3">
-                                                <button
-                                                    className="cursor-pointer bg-yellow-400 text-black p-2 rounded-md hover:bg-yellow-500 transition-colors"
-                                                    onClick={() => openEditModal(supplier)}
-                                                    title="Editar proveedor"
-                                                >
-                                                    <Pencil size={16} />
-                                                </button>
-                                            </td>
-                                            <td className="p-3">
-                                                <button
-                                                    className="cursor-pointer bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors"
-                                                    onClick={() => openDeleteModal(supplier)}
-                                                    title="Eliminar proveedor"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                    <button
+                                                        className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+                                                        onClick={() => openDeleteModal(supplier)}
+                                                        title="Eliminar proveedor"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))

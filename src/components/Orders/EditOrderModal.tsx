@@ -99,7 +99,8 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
     if (isLoadingOrder) return <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><p className="text-white">Cargando orden...</p></div>;
 
     if (orderData) return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+       <div className="fixed inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+
             <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="bg-[#F9F9F9] w-full max-w-6xl rounded-xl shadow-2xl flex flex-col max-h-[95vh]">
                 <div className="bg-[#575B4F] text-white px-8 py-5 text-xl font-semibold flex justify-between items-center">
                     Editar Orden #{orderData.orderNumber}

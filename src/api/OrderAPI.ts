@@ -157,3 +157,5 @@ export async function getSalesByDate(date: string) {
         throw new Error("No se pudo obtener el reporte de ventas");
     }
 }
+
+export type { Order };
