@@ -123,3 +123,42 @@ export type Order = z.infer<typeof orderSchema>
 export type OrderItem = z.infer<typeof orderItemSchema>
 export type OrderFormData = z.infer<typeof orderFormDataSchema>
 export type PartialOrderFormData = z.infer<typeof partialOrderFormDataSchema>;
+
+/** Cash closing */
+const salesSummarySchema = z.object({
+    totalSales: z.number(),
+    cashSales: z.number(),
+    transactionSales: z.number(),
+    orderCount: z.number(),
+});
+
+export const dailySalesReportSchema = z.object({
+    summary: salesSummarySchema,
+    orders: dashboardOrderSchema,
+});
+
+export type DailySalesReport = z.infer<typeof dailySalesReportSchema>;
+
+export const cashClosingSchema = z.object({
+    _id: z.string(),
+    closingDate: z.string(),
+    initialFund: z.number(),
+    totalSales: z.number(),
+    cashSales: z.number(),
+    transactionSales: z.number(),
+    expectedCashInBox: z.number(),
+    finalBalance: z.number(),
+    notes: z.string().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+export type CashClosing = z.infer<typeof cashClosingSchema>;
+
+export const createCashClosingSchema = z.object({
+    initialFund: z.number().min(0, 'El fondo inicial no puede ser negativo.'),
+    closingDate: z.string(),
+    notes: z.string().optional(),
+});
+
+export type CreateCashClosingFormData = z.infer<typeof createCashClosingSchema>;

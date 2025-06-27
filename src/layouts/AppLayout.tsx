@@ -21,7 +21,7 @@ export default function AppLayout() {
                         <NavItem icon={<Utensils size={18} />} label="Órdenes" to="/orders"/>
                         <NavItem icon={<Truck size={18} />} label="Proveedores" to="/suppliers" />
                         <NavItem icon={<Package size={18} />} label="Insumos" to="/supplies"/>
-                        <NavItem icon={<Receipt size={18} />} label="Corte de caja" to="/caja"/>
+                        <NavItem icon={<Receipt size={18} />} label="Corte de caja" to="/cash-closing"/>
                     </nav>
                 </div>
 
