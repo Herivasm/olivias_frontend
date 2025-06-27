@@ -162,3 +162,29 @@ export const createCashClosingSchema = z.object({
 });
 
 export type CreateCashClosingFormData = z.infer<typeof createCashClosingSchema>;
+
+/** Auth & User */
+export const userSchema = z.object({
+    _id: z.string(),
+    name: z.string(),
+    email: z.string().email(),
+});
+
+export const registerSchema = z.object({
+    name: z.string().min(1, 'El nombre es obligatorio'),
+    email: z.string().email('Email no válido'),
+    password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    password_confirmation: z.string()
+}).refine(data => data.password === data.password_confirmation, {
+    message: 'Las contraseñas no coinciden',
+    path: ['password_confirmation']
+});
+
+export const loginSchema = z.object({
+    email: z.string().email('Email no válido'),
+    password: z.string().min(1, 'La contraseña es obligatoria')
+});
+
+export type User = z.infer<typeof userSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
