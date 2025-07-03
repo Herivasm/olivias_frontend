@@ -70,18 +70,12 @@ export default function SuppliesList() {
     setSelectedSupply(null)
   }
 
-  const handleEditSuccess = () => {
-    fetchSupplies() 
-  }
-
-  const handleDeleteSuccess = () => {
+  const handleSuccess = () => {
     fetchSupplies() 
   }
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-
       <div className="flex-1 p-6 bg-[#f4f5f5]">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-[#505341]">Lista de insumos</h1>
@@ -94,7 +88,6 @@ export default function SuppliesList() {
         </div>
 
         <div className="bg-[#575B4F] p-4 rounded-lg">
-          {/* Componente de filtros */}
           <SuppliesFilters
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -107,22 +100,20 @@ export default function SuppliesList() {
             onClearFilters={clearFilters}
           />
 
-          {/* Tabla */}
           <div className="overflow-x-auto">
             <table className="w-full text-sm bg-[#f3f1dd] rounded-md overflow-hidden">
               <thead className="text-left font-semibold">
                 <tr>
-                  <th className="p-3">Proveedor</th>
                   <th className="p-3">Nombre del insumo</th>
                   <th className="p-3">Stock</th>
                   <th className="p-3">Medida</th>
-                  <th className="p-3 text-center">Acciones</th> {/* Aquí unificamos */}
+                  <th className="p-3 text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-white text-[#333]">
                 {paginatedSupplies.paginatedItems.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-gray-500">
+                    <td colSpan={4} className="p-8 text-center text-gray-500">
                       {filteredSupplies.length === 0 
                         ? (supplies.length === 0 
                           ? 'No hay insumos registrados' 
@@ -134,7 +125,6 @@ export default function SuppliesList() {
                 ) : (
                   paginatedSupplies.paginatedItems.map((supply) => (
                     <tr key={supply._id} className="border-t hover:bg-gray-50 transition-colors">
-                      <td className="p-3">{supply.supplier?.supplierName ?? 'Sin proveedor'}</td>
                       <td className="p-3">
                         <span className="font-medium">{supply.supplyName}</span>
                       </td>
@@ -182,7 +172,6 @@ export default function SuppliesList() {
             </table>
           </div>
 
-          {/* Controles de paginación */}
           <PaginationControls
             currentPage={paginatedSupplies.currentPage}
             totalPages={paginatedSupplies.totalPages}
@@ -200,19 +189,19 @@ export default function SuppliesList() {
         </div>
       </div>
 
-      {isModalOpen && <CreateSuppliesView onClose={closeModal} />}
+      {isModalOpen && <CreateSuppliesView onClose={closeModal} onSuccess={handleSuccess} />}
       {isEditModalOpen && selectedSupply && (
         <EditSuppliesView 
           supply={selectedSupply}
           onClose={closeEditModal}
-          onSuccess={handleEditSuccess}
+          onSuccess={handleSuccess}
         />
       )}
       {isDeleteModalOpen && selectedSupply && (
         <DeleteConfirmationModal 
           supply={selectedSupply}
           onClose={closeDeleteModal}
-          onSuccess={handleDeleteSuccess}
+          onSuccess={handleSuccess}
         />
       )}
     </div>

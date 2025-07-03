@@ -1,16 +1,18 @@
-import { Search, Filter } from 'lucide-react'
-import type { SuppliersFilters as FiltersType } from './useSuppliersFilters'
+import { Search, Filter } from 'lucide-react';
+// Cambiamos el alias para mayor claridad
+import type { SuppliersFilters as FiltersObject } from './useSuppliersFilters';
 
+// ✅ CORRECCIÓN: Ajustamos la interfaz para que acepte un objeto parcial de filtros
 interface SuppliersFiltersProps {
-  searchTerm: string
-  setSearchTerm: (term: string) => void
-  showFilters: boolean
-  setShowFilters: (show: boolean) => void
-  filters: FiltersType
-  setFilters: (filters: FiltersType | ((prev: FiltersType) => FiltersType)) => void
-  uniqueSupplies: { _id: string; supplyName: string }[]
-  hasActiveFilters: boolean
-  onClearFilters: () => void
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  showFilters: boolean;
+  setShowFilters: (show: boolean) => void;
+  filters: Partial<FiltersObject>; // Se espera un objeto parcial
+  setFilters: (filters: Partial<FiltersObject> | ((prev: Partial<FiltersObject>) => Partial<FiltersObject>)) => void; // Se ajusta el tipo del setter
+  uniqueSupplies: { _id: string; supplyName: string }[];
+  hasActiveFilters: boolean;
+  onClearFilters: () => void;
 }
 
 export default function SuppliersFilters({
@@ -68,7 +70,8 @@ export default function SuppliersFilters({
                 Filtrar por insumo que suministran
               </label>
               <select
-                value={filters.supply}
+                // ✅ CORRECCIÓN: Se añade '|| ""' para manejar el caso en que el filtro no esté definido
+                value={filters.supply || ''} 
                 onChange={(e) => setFilters(prev => ({ ...prev, supply: e.target.value }))}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#575B4F]"
               >

@@ -10,7 +10,6 @@ interface EditSuppliesProps {
 export default function EditSuppliesView({ onClose, supply, onSuccess }: EditSuppliesProps) {
     return (
         <div>
-            {/* Edit Supplies modal content */}
             <EditSuppliesModal 
                 onClose={onClose} 
                 supply={supply}

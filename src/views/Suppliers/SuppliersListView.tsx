@@ -81,12 +81,9 @@ export default function SuppliersListView() {
         setIsDeleteModalOpen(false)
         setSelectedSupplier(null)
     }
-
-    const handleEditSuccess = () => {
-        fetchSuppliers()
-    }
-
-    const handleDeleteSuccess = () => {
+    
+    // --- MODIFICACIÓN 1: Unificar los manejadores de éxito ---
+    const handleSuccess = () => {
         fetchSuppliers()
     }
 
@@ -104,7 +101,6 @@ export default function SuppliersListView() {
                 </div>
 
                 <div className="bg-[#575B4F] p-4 rounded-lg">
-                    {/* Componente de filtros */}
                     <SuppliersFilters
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
@@ -117,7 +113,6 @@ export default function SuppliersListView() {
                         onClearFilters={clearFilters}
                     />
 
-                    {/* TABLA DE PROVEEDORES */}
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm bg-[#f3f1dd] rounded-md overflow-hidden">
                             <thead className="text-left font-semibold">
@@ -176,7 +171,6 @@ export default function SuppliersListView() {
                         </table>
                     </div>
 
-                    {/* Controles de paginación */}
                     <PaginationControls
                         currentPage={paginatedSuppliers.currentPage}
                         totalPages={paginatedSuppliers.totalPages}
@@ -194,14 +188,14 @@ export default function SuppliersListView() {
                 </div>
             </div>
 
-            {/* MODALES */}
-            {isModalOpen && <CreateProviderView onClose={closeModal} />}
+            {/* --- MODIFICACIÓN 2: Pasar la función 'handleSuccess' a los modales --- */}
+            {isModalOpen && <CreateProviderView onClose={closeModal} onSuccess={handleSuccess} />}
 
             {isEditModalOpen && selectedSupplier && (
                 <EditSuppliersView
                     supplier={selectedSupplier}
                     onClose={closeEditModal}
-                    onSuccess={handleEditSuccess}
+                    onSuccess={handleSuccess}
                 />
             )}
 
@@ -209,7 +203,7 @@ export default function SuppliersListView() {
                 <DeleteSupplierConfirmationModal
                     supplier={selectedSupplier}
                     onClose={closeDeleteModal}
-                    onSuccess={handleDeleteSuccess}
+                    onSuccess={handleSuccess}
                 />
             )}
         </div>
