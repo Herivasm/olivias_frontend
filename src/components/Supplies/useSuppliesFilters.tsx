@@ -1,85 +1,77 @@
-// src/hooks/useSuppliesFilters.ts
-import { useState, useEffect, useMemo } from 'react'
-import type { Supply } from '../../api/SuppliesAPI'
+import { useState, useMemo } from 'react';
+import type { Supply, Supplier } from '../../api/SuppliesAPI';
 
-export interface SuppliesFilters {
-  measure: string
-  stockRange: string
-  supplier: string
+// Definimos la interfaz completa para los filtros
+export interface ActiveFilters {
+  supplier: string;
+  measure: 'litros' | 'kilos' | '';
+  stockRange: 'low' | 'medium' | 'high' | '';
 }
 
-export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => void) => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
-  const [filters, setFilters] = useState<SuppliesFilters>({
-    measure: '',
-    stockRange: '',
-    supplier: ''
-  })
+export function useSuppliesFilters(
+  supplies: Supply[],
+  resetPagination: () => void
+) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Partial<ActiveFilters>>({});
 
+  const uniqueSuppliers: Supplier[] = useMemo(() => {
+    const allSuppliers = supplies.flatMap(supply => supply.suppliers).filter(Boolean);
+    const unique = new Map<string, Supplier>();
+    allSuppliers.forEach(supplier => {
+      if (!unique.has(supplier._id)) {
+        unique.set(supplier._id, supplier);
+      }
+    });
+    return Array.from(unique.values()).sort((a, b) => a.supplierName.localeCompare(b.supplierName));
+  }, [supplies]);
 
   const filteredSupplies = useMemo(() => {
-    let filtered = [...supplies]
+    let filtered = supplies;
+    const lowercasedTerm = searchTerm.toLowerCase();
 
-    if (searchTerm.trim()) {
+    // Lógica de Búsqueda (Nombre de Insumo Y Nombre de Proveedor)
+    if (searchTerm) {
       filtered = filtered.filter(supply =>
-        supply.supplyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        supply.supplier?.supplierName?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        supply.supplyName.toLowerCase().includes(lowercasedTerm) ||
+        supply.suppliers.some(s => s.supplierName.toLowerCase().includes(lowercasedTerm))
+      );
     }
 
-    if (filters.measure) {
-      filtered = filtered.filter(supply => supply.measure === filters.measure)
-    }
-
-    if (filters.stockRange) {
-      switch (filters.stockRange) {
-        case 'low':
-          filtered = filtered.filter(supply => supply.stock < 10)
-          break
-        case 'medium':
-          filtered = filtered.filter(supply => supply.stock >= 10 && supply.stock < 50)
-          break
-        case 'high':
-          filtered = filtered.filter(supply => supply.stock >= 50)
-          break
-      }
-    }
-
-
+    // Lógica de Filtro por Proveedor
     if (filters.supplier) {
-      filtered = filtered.filter(supply => supply.supplier?._id === filters.supplier)
+      filtered = filtered.filter(supply =>
+        supply.suppliers.some(s => s._id === filters.supplier)
+      );
     }
 
-    return filtered
-  }, [supplies, searchTerm, filters])
+    // Lógica de Filtro por Medida
+    if (filters.measure) {
+      filtered = filtered.filter(supply => supply.measure === filters.measure);
+    }
 
+    // Lógica de Filtro por Nivel de Stock
+    if (filters.stockRange) {
+      filtered = filtered.filter(supply => {
+        const stock = supply.stock;
+        if (filters.stockRange === 'low') return stock < 10;
+        if (filters.stockRange === 'medium') return stock >= 10 && stock <= 49;
+        if (filters.stockRange === 'high') return stock >= 50;
+        return true;
+      });
+    }
 
-  const uniqueSuppliers = useMemo(() => {
-    return supplies.reduce((acc, supply) => {
-      if (supply.supplier && !acc.find(s => s._id === supply.supplier._id)) {
-        acc.push(supply.supplier)
-      }
-      return acc
-    }, [] as { _id: string; supplierName: string }[])
-  }, [supplies])
-
+    return filtered;
+  }, [supplies, searchTerm, filters]);
 
   const clearFilters = () => {
-    setSearchTerm('')
-    setFilters({
-      measure: '',
-      stockRange: '',
-      supplier: ''
-    })
-    onFiltersChange?.()
-  }
-
-  const hasActiveFilters = searchTerm || filters.measure || filters.stockRange || filters.supplier
-
-  useEffect(() => {
-    onFiltersChange?.()
-  }, [searchTerm, filters, onFiltersChange])
+    setFilters({});
+    setSearchTerm('');
+    resetPagination();
+  };
+  
+  const hasActiveFilters = searchTerm.length > 0 || Object.values(filters).some(val => val && val !== '');
 
   return {
     searchTerm,
@@ -91,6 +83,6 @@ export const useSuppliesFilters = (supplies: Supply[], onFiltersChange?: () => v
     filteredSupplies,
     uniqueSuppliers,
     clearFilters,
-    hasActiveFilters
-  }
+    hasActiveFilters,
+  };
 }

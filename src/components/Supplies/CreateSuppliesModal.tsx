@@ -8,10 +8,9 @@ import { createSupply, getAllSuppliers, type Supplier } from "../../api/Supplies
 
 interface CreateSuppliesModalProps {
   onClose: () => void
-  onCreated?: () => void
+  onSuccess?: () => void
 }
 
-// 🎯 Zod schema para validar
 const supplySchema = z.object({
   supplier: z.string().min(1, "El proveedor es requerido"),
   supplyName: z.string().min(1, "El nombre del insumo es requerido"),
@@ -19,10 +18,9 @@ const supplySchema = z.object({
   stock: z.number({ invalid_type_error: "Debe ser un número" }).min(1, "El stock debe ser mayor a 0"),
 })
 
-// 🧠 Inferimos el tipo
 type SupplyFormData = z.infer<typeof supplySchema>
 
-export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppliesModalProps) {
+export default function CreateSuppliesModal({ onClose, onSuccess }: CreateSuppliesModalProps) {
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
 
   const {
@@ -30,7 +28,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
     handleSubmit,
     setValue,
     formState: { errors },
-    reset,
   } = useForm<SupplyFormData>({
     resolver: zodResolver(supplySchema),
   })
@@ -46,13 +43,11 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
   const onSubmit = async (data: SupplyFormData) => {
     try {
       await createSupply(data)
-      reset()
-      if (onCreated) onCreated()
+      
+      if (onSuccess) onSuccess()
       onClose()
-      toast.success("Insumo registrado exitosamente", {
-      onClose: () => window.location.reload(),
-      autoClose: 3000
-    })
+      toast.success("Insumo registrado exitosamente")
+      
     } catch (err) {
       console.error(err)
       toast.error("Error al registrar el insumo")
@@ -62,7 +57,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
   return (
     <div className="fixed inset-0 bg-gray bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-[2px]">
       <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* HEADER */}
         <div className="bg-[#575B4F] text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-lg font-semibold">REGISTRAR INSUMO</h2>
           <button onClick={onClose}>
@@ -70,10 +64,8 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
           </button>
         </div>
 
-        {/* FORMULARIO */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Proveedor */}
             <div>
               <label className="block text-sm font-medium mb-1">Proveedor</label>
               <select
@@ -90,7 +82,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
               {errors.supplier && <p className="text-red-500 text-sm">{errors.supplier.message}</p>}
             </div>
 
-            {/* Nombre del insumo */}
             <div>
               <label className="block text-sm font-medium mb-1">Nombre del insumo</label>
               <input
@@ -101,7 +92,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
               {errors.supplyName && <p className="text-red-500 text-sm">{errors.supplyName.message}</p>}
             </div>
 
-            {/* Gramaje */}
             <div>
               <label className="block text-sm font-medium mb-1">Stock (gramaje)</label>
               <input
@@ -113,7 +103,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
             </div>
           </div>
 
-          {/* Medida */}
           <div className="mt-6">
             <label className="block text-sm font-medium mb-1">Medida</label>
             <div className="flex gap-4">
@@ -122,7 +111,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
                   type="radio"
                   value="litros"
                   {...register("measure")}
-                  onClick={() => setValue("measure", "litros")}
                 />
                 <span>Litros</span>
               </label>
@@ -131,7 +119,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
                   type="radio"
                   value="kilos"
                   {...register("measure")}
-                  onClick={() => setValue("measure", "kilos")}
                 />
                 <span>Kilos</span>
               </label>
@@ -139,7 +126,6 @@ export default function CreateSuppliesModal({ onClose, onCreated }: CreateSuppli
             {errors.measure && <p className="text-red-500 text-sm mt-1">{errors.measure.message}</p>}
           </div>
 
-          {/* BOTONES */}
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
             <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md">
               Cancelar
