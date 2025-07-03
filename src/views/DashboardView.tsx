@@ -1,4 +1,4 @@
-// DashboardView.tsx (Código completo y final)
+
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProducts } from "../api/ProductAPI";
@@ -7,7 +7,7 @@ import ProductModal from "../components/Products/ProductModal";
 import { Pencil, Trash2, Filter, Plus, Search, Eye } from 'lucide-react';
 import { useState, useMemo } from "react";
 import type { Product } from "../types";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; 
 import ProductDeleteModal from "../components/Products/ProductDeleteModal";
 
 const categoryTranslations: { [key: string]: string } = {
@@ -131,7 +131,6 @@ export default function DashboardView() {
                 </div>
             </div>
 
-            {/* Modal de Crear/Editar */}
             {modalState.isOpen && (
                 <ProductModal
                     onClose={handleCloseModal}
@@ -139,7 +138,7 @@ export default function DashboardView() {
                 />
             )}
             
-            {/* Modal de Eliminación */}
+            
             {productToDelete && (
                 <ProductDeleteModal
                     product={productToDelete}

@@ -13,9 +13,9 @@ export default function OrderDetailsView() {
 
     const { data: order, isLoading, isError, error } = useQuery({
         queryKey: ['order', orderId],
-        queryFn: () => getOrderById(orderId!), 
-        enabled: !!orderId, 
-        retry: false, 
+        queryFn: () => getOrderById(orderId!),
+        enabled: !!orderId,
+        retry: false,
     });
 
     if (isLoading) return <p className="text-center text-2xl font-bold mt-10">Cargando Orden...</p>;
@@ -26,7 +26,7 @@ export default function OrderDetailsView() {
             <div className="bg-[#575B4F] text-white px-8 py-5 flex items-center justify-between">
                 <h2 className="text-xl font-semibold uppercase tracking-wide">Detalle de la Orden</h2>
                 <Link to={'/orders'}>
-                    <button className="text-white hover:text-gray-300 transition-colors p-1" title="Volver">
+                    <button className="text-white hover:text-gray-300 transition-colors p-1" title="Volver a Órdenes">
                         <ArrowLeft size={22} />
                     </button>
                 </Link>
@@ -40,7 +40,7 @@ export default function OrderDetailsView() {
                     </p>
                     <p className="text-base font-semibold text-gray-800 uppercase">
                         Fecha:
-                        <span className="font-normal normal-case ml-2 text-gray-700">{new Date(order.createdAt).toLocaleString('es-MX')}</span>
+                        <span className="font-normal normal-case ml-2 text-gray-700">{new Date(order.createdAt).toLocaleString('es-MX', { dateStyle: 'long', timeStyle: 'short' })}</span>
                     </p>
                 </div>
 
@@ -57,10 +57,11 @@ export default function OrderDetailsView() {
                         <tbody className="bg-white divide-y divide-gray-200">
                             {order.products.map(item => (
                                 <tr key={item._id}>
-                                    <td className="px-6 py-4">{item.product.productName}</td>
+                                    {/* --- LA CORRECCIÓN ESTÁ AQUÍ --- */}
+                                    <td className="px-6 py-4">{item.productName}</td>
                                     <td className="px-6 py-4 text-center">{item.quantity}</td>
-                                    <td className="px-6 py-4 text-right">{item.unitPrice.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
-                                    <td className="px-6 py-4 text-right font-medium">{(item.quantity * item.unitPrice).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
+                                    <td className="px-6 py-4 text-right">{item.price.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
+                                    <td className="px-6 py-4 text-right font-medium">{(item.quantity * item.price).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
                                 </tr>
                             ))}
                         </tbody>

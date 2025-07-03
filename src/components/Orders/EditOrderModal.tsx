@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+ import { useState, useMemo, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -29,10 +29,11 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
     const [searchTerm, setSearchTerm] = useState('');
     const queryClient = useQueryClient();
 
-    const { data: orderData, isLoading: isLoadingOrder } = useQuery({
+    const { data: orderData, isLoading: isLoadingOrder, isError, error: orderError } = useQuery({
         queryKey: ['order', orderId],
         queryFn: () => getOrderById(orderId),
         enabled: !!orderId,
+        retry: false,
     });
 
     const { data: availableProducts, isLoading: isLoadingProducts } = useQuery({
@@ -52,28 +53,35 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
     useEffect(() => {
         if (orderData) {
             const formProducts = orderData.products.map(item => ({
-                product: item.product._id,
+                product: item.productId,
                 quantity: item.quantity,
-                unitPrice: item.unitPrice
+                unitPrice: item.price,
             }));
-            reset({ ...orderData, products: formProducts });
+            reset({
+                notes: orderData.notes,
+                paymentMethod: orderData.paymentMethod,
+                status: orderData.status,
+                products: formProducts,
+            });
         }
     }, [orderData, reset]);
 
     const productsInOrder = watch('products');
 
-    const total = productsInOrder?.reduce((sum, item) => {
+    // --- CÁLCULO DEL TOTAL (CORREGIDO) ---
+    // Quitamos useMemo para que el total se actualice en cada cambio de cantidad.
+    const total = (productsInOrder || []).reduce((sum, item) => {
         const quantity = Number(item.quantity) || 0;
         const price = item.unitPrice || 0;
         return sum + (quantity * price);
-    }, 0) ?? 0;
+    }, 0);
 
     const mutation = useMutation({
         mutationFn: updateOrder,
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['orders'] });
             queryClient.invalidateQueries({ queryKey: ['order', orderId] });
-            toast.success("Orden actualizada");
+            toast.success("Orden actualizada correctamente");
             onClose();
         },
         onError: (error) => toast.error(error.message)
@@ -89,25 +97,40 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
             toast.info("Este producto ya está en la orden o no está disponible.");
             return;
         }
-        append({ product: product._id, quantity: 1, unitPrice: product.price });
+        append({
+            product: product._id,
+            quantity: 1,
+            unitPrice: product.price
+        });
     };
 
     const filteredProducts = useMemo(() =>
         availableProducts?.filter(p => p.productName.toLowerCase().includes(searchTerm.toLowerCase())) || [],
         [availableProducts, searchTerm]);
 
-    if (isLoadingOrder) return <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><p className="text-white">Cargando orden...</p></div>;
+    if (isLoadingOrder) return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <p className="text-white text-lg font-semibold">Cargando datos de la orden...</p>
+        </div>
+    );
+
+    if (isError) {
+        toast.error(orderError.message, { toastId: 'fetch-order-error' });
+        onClose();
+        return null;
+    }
 
     if (orderData) return (
-       <div className="fixed inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
 
             <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="bg-[#F9F9F9] w-full max-w-6xl rounded-xl shadow-2xl flex flex-col max-h-[95vh]">
-                <div className="bg-[#575B4F] text-white px-8 py-5 text-xl font-semibold flex justify-between items-center">
+                <div className="bg-[#575B4F] text-white px-8 py-5 text-xl font-semibold flex justify-between items-center shrink-0">
                     Editar Orden #{orderData.orderNumber}
                     <button type="button" onClick={onClose} className="p-1 rounded-full hover:bg-white/20"><X size={24} /></button>
                 </div>
 
-                <div className="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
+                <div className="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 gap-8 overflow-y-auto">
+                    {/* Columna Izquierda: Agregar Productos */}
                     <div className="flex flex-col gap-4">
                         <h3 className="font-bold text-lg">Agregar Más Productos</h3>
                         <input type="text" placeholder="Buscar producto..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full px-3 py-2 rounded-md border" />
@@ -123,6 +146,7 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
                         </div>
                     </div>
 
+                    {/* Columna Derecha: Resumen de la orden */}
                     <div className="flex flex-col gap-4">
                         <h3 className="font-bold text-lg">Orden Actual</h3>
                         <div className="overflow-x-auto rounded-lg border border-gray-300">
@@ -135,42 +159,60 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
                                         <th className="px-4 py-2 text-center"></th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y">
-                                    {fields.map((field, index) => {
-                                        const product = availableProducts?.find(p => p._id === field.product);
-                                        return (
-                                            <tr key={field.id}>
-                                                <td className="px-4 py-2">{product?.productName ?? '...'}</td>
-                                                <td className="px-4 py-2 w-24">
-                                                    <input type="number" {...register(`products.${index}.quantity`, { valueAsNumber: true })} className="w-full p-1 border rounded-md" />
-                                                </td>
-                                                <td className="px-4 py-2 text-right">{watch(`products.${index}.unitPrice`).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
-                                                <td className="px-4 py-2 text-center">
-                                                    <button type="button" onClick={() => remove(index)} className="text-red-600 hover:text-red-800 p-1 rounded-md">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
+                               <tbody className="bg-white divide-y">
+    {fields.map((field, index) => {
+        const productInfo = availableProducts?.find(p => p._id === field.product);
+        return (
+            <tr key={field.id}>
+                <td className="px-4 py-2">{productInfo?.productName ?? '...'}</td>
+                <td className="px-4 py-2 w-24">
+                    <input
+                        type="number"
+                        {...register(`products.${index}.quantity`, { valueAsNumber: true })}
+                        className="w-full p-1 border rounded-md"
+                    />
+                </td>
+                <td className="px-4 py-2 text-right">
+                    {watch(`products.${index}.unitPrice`).toLocaleString('es-MX', {
+                        style: 'currency',
+                        currency: 'MXN'
+                    })}
+                </td>
+                <td className="px-4 py-2 text-center">
+                    <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="text-red-600 hover:text-red-800 p-1 rounded-md"
+                    >
+                        <Trash2 size={16} />
+                    </button>
+                </td>
+            </tr>
+        );
+    })}
+</tbody>
+
                             </table>
                         </div>
                         <div className='grid grid-cols-2 gap-4'>
                             <div>
                                 <label className='block text-sm font-medium text-gray-700'>Estado</label>
-                                <select {...register("status")} className='w-full p-2 mt-1 border rounded-md'>
+                                <select {...register("status")} className='w-full p-2 mt-1 border rounded-md bg-white'>
                                     {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className='block text-sm font-medium text-gray-700'>Método de Pago</label>
-                                <select {...register("paymentMethod")} className="w-full p-2 mt-1 border rounded-md">
+                                <select {...register("paymentMethod")} className="w-full p-2 mt-1 border rounded-md bg-white">
                                     {paymentMethodOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                                 </select>
                             </div>
                         </div>
-                        <div className="flex justify-between items-center mt-auto pt-4">
+                        <div>
+                            <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notas Adicionales</label>
+                            <textarea id="notes" rows={2} {...register("notes")} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2"></textarea>
+                        </div>
+                        <div className="flex justify-between items-center mt-auto pt-2">
                             <div className="text-lg font-semibold text-right w-full">
                                 Total: <span className="text-green-700 font-bold">{total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
                             </div>
@@ -179,7 +221,7 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-4 p-4 border-t bg-gray-50">
+                <div className="flex justify-end gap-4 p-4 border-t bg-gray-50 shrink-0">
                     <button type="button" onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-2 rounded-md">Cancelar</button>
                     <button type="submit" disabled={isSubmitting || mutation.isPending} className="bg-[#575B4F] hover:bg-[#43463c] text-white px-5 py-2 rounded-md disabled:opacity-50">
                         {isSubmitting || mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
