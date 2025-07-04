@@ -136,6 +136,7 @@ export default function EditSuppliersModal({ onClose, supplier, onSuccess }: Edi
               </label>
               <input
                 type="text"
+                maxLength={10}
                 name="contact"
                 value={formData.contact}
                 onChange={handleInputChange}
