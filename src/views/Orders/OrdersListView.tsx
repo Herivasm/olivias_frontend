@@ -14,6 +14,7 @@ import OrdersFilters from "../../components/Orders/OrdersFilters";
 import PaginationControls from "../../components/PaginationControls";
 import { useOrdersFilters } from "../../components/Orders/useOrdersFilters";
 import { usePagination } from "../../components/usePagination";
+import OrderDeleteModal from "../../components/Orders/OrderDeleteModal"; // <-- 1. Importar el nuevo modal
 
 type DashboardOrder = z.infer<typeof dashboardOrderSchema>[number];
 
@@ -33,6 +34,7 @@ const statusColors: { [key: string]: string } = {
 export default function OrdersListView() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
+  const [orderToDelete, setOrderToDelete] = useState<DashboardOrder | null>(null); // <-- 2. Añadir estado para el modal
   const queryClient = useQueryClient();
 
   const { data: orders, isLoading, isError, error } = useQuery({
@@ -65,6 +67,13 @@ export default function OrdersListView() {
   if (isLoading) return <p className="text-center text-2xl font-bold mt-10">Cargando Órdenes...</p>;
   if (isError) return <p className="text-center text-red-600 text-2xl font-bold mt-10">Error: {error.message}</p>;
 
+  const handleConfirmDelete = () => {
+    if (orderToDelete) {
+      deleteMutation.mutate(orderToDelete._id);
+      setOrderToDelete(null); // Cerrar el modal
+    }
+  };
+
   return (
     <>
       <div className="flex-1 p-6 md:p-8 bg-[#f4f5f5]">
@@ -81,7 +90,6 @@ export default function OrdersListView() {
 
        
         <div className="bg-[#575B4F] shadow-md rounded-lg p-4">
-          {/*filtros */}
           <div className="mb-4">
             <OrdersFilters 
               {...filterProps}
@@ -134,11 +142,7 @@ export default function OrdersListView() {
                           <Pencil size={16} />
                         </button>
                         <button
-                          onClick={() => {
-                            if (confirm(`¿Seguro que quieres eliminar la orden #${order.orderNumber}?`)) {
-                              deleteMutation.mutate(order._id);
-                            }
-                          }}
+                          onClick={() => setOrderToDelete(order)} // <-- 3. Cambiar el onClick para abrir el modal
                           title="Eliminar"
                           className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700"
                         >
@@ -172,6 +176,16 @@ export default function OrdersListView() {
 
       {isCreateModalOpen && <CreateOrderModal onClose={() => setIsCreateModalOpen(false)} />}
       {editingOrderId && <EditOrderModal orderId={editingOrderId} onClose={() => setEditingOrderId(null)} />}
+      
+      {/* -- 4. Renderizar el modal condicionalmente -- */}
+      {orderToDelete && (
+        <OrderDeleteModal 
+          order={orderToDelete}
+          isLoading={deleteMutation.isPending}
+          onClose={() => setOrderToDelete(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </>
   );
 }

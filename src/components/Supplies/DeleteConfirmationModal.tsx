@@ -56,7 +56,12 @@ export default function DeleteConfirmationModal({ onClose, supply, onSuccess }: 
             </h3>
             <div className="text-sm text-gray-500 space-y-1">
               <p><strong>Nombre:</strong> {supply.supplyName}</p>
-              <p><strong>Proveedor:</strong> {supply.supplier?.supplierName ?? 'Sin proveedor'}</p>
+              <p>
+                <strong>Proveedor:</strong>{' '}
+                {Array.isArray(supply.suppliers) && supply.suppliers.length > 0
+                  ? supply.suppliers.map(s => s.supplierName).join(', ')
+                  : 'Sin proveedor'}
+              </p>
               <p><strong>Stock:</strong> {supply.stock} {supply.measure}</p>
             </div>
             <p className="text-red-600 text-sm mt-3 font-medium">
