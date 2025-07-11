@@ -78,7 +78,7 @@ export default function EditOrderModal({ orderId, onClose }: EditOrderModalProps
 
     const mutation = useMutation({
         mutationFn: updateOrder,
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] });
             queryClient.invalidateQueries({ queryKey: ['order', orderId] });
             toast.success("Orden actualizada correctamente");
