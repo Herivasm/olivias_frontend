@@ -52,7 +52,7 @@ export default function CreateOrderModal({ onClose }: CreateOrderModalProps) {
 
     const mutation = useMutation({
         mutationFn: createOrder,
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] });
             toast.success("Orden creada exitosamente");
             onClose();
