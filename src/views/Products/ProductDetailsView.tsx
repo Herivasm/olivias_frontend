@@ -28,7 +28,7 @@ export default function ProductDetailsView() {
     queryFn: () => getProductById(productId!),
     enabled: !!productId,
     retry: false,
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error(error.message);
     },
   });
