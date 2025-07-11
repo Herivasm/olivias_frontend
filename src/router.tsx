@@ -10,7 +10,6 @@ import OrderDetailsView from "./views/Orders/OrderDetailsView";
 import SupplierstList from "./views/Suppliers/SuppliersListView";
 import SupplierDetailsView from "./views/Suppliers/SuppliersDetailsView";
 import SuppliesList from "./views/Supplies/SuppliesListView";
-import EditSuppliers from "./views/Suppliers/EditSuppliersView";
 import SuppliesDetailsView from "./views/Supplies/SuppliesDetailsView";
 
 // IMPORTACIONES DE CAJA
