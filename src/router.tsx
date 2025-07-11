@@ -3,7 +3,6 @@ import AppLayout from "./layouts/AppLayout";
 import DashboardView from "./views/DashboardView";
 import ProductDetailsView from "./views/Products/ProductDetailsView";
 import OrdersListView from "./views/Orders/OrdersListView";
-// import Sidebar from "./layouts/sidebar";
 import OrderDetailsView from "./views/Orders/OrderDetailsView";
 
 
@@ -46,7 +45,7 @@ export default function Router() {
                     // SUPPLIERS
                         <Route path="/suppliers" element={<SupplierstList />} />
                         <Route path="/suppliers/:id" element={<SupplierDetailsView />} />
-                        <Route path="/suppliers/:id" element={<EditSuppliers onClose={() => { }} />} />
+                        <Route path="/suppliers/:id" />
 
                     // SUPPLIES
                         <Route path="/supplies" element={<SuppliesList />} />
