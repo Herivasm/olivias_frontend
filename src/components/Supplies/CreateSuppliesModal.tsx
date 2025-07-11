@@ -26,7 +26,6 @@ export default function CreateSuppliesModal({ onClose, onSuccess }: CreateSuppli
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<SupplyFormData>({
     resolver: zodResolver(supplySchema),
