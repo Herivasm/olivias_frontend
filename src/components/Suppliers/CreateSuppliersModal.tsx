@@ -23,7 +23,6 @@ export default function CreateSuppliersModal({ onClose, onSuccess }: CreateSuppl
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<SupplierFormData>({
     resolver: zodResolver(supplierSchema),
   })
