@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProductById } from "../../api/ProductAPI";
@@ -28,10 +29,13 @@ export default function ProductDetailsView() {
     queryFn: () => getProductById(productId!),
     enabled: !!productId,
     retry: false,
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
   });
+
+   useEffect(() => {
+    if (isError && error) {
+      toast.error(error.message);
+    }
+  }, [isError, error]);
 
   if (isLoading) return <p className="text-center text-lg p-10">Cargando producto...</p>;
   if (isError) return <div className="p-10"><ErrorMessage>{error.message}</ErrorMessage></div>;
