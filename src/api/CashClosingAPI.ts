@@ -3,7 +3,6 @@ import { isAxiosError } from "axios";
 import api from "../lib/axios";
 import {
     cashClosingSchema,
-    createCashClosingSchema, // Asegúrate de que este schema esté en tus types
     type CreateCashClosingFormData,
     type CashClosing,
 } from "../types";
