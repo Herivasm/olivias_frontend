@@ -1,7 +1,3 @@
-
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
-
 export default function PrivacyPolicyView() {
   return (
     <div className="flex-1 p-6 bg-[#f4f5f5] text-[#333] overflow-y-auto">
